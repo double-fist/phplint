@@ -33,6 +33,14 @@ abstract class AbstractRule implements Rule
     /**
      * @inheritdoc
      */
+    public function canValidateNode(AstNode $node): bool
+    {
+        return in_array($node->getType(), $this->getTypes());
+    }
+
+    /**
+     * @inheritdoc
+     */
     abstract public function getTypes(): array;
 
     /**

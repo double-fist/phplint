@@ -26,6 +26,12 @@ interface Rule
 
     /**
      * @param AstNode $node
+     * @return bool
+     */
+    public function canValidateNode(AstNode $node): bool;
+
+    /**
+     * @param AstNode $node
      * @param LintContext $context
      * @param LintResult $result
      */
