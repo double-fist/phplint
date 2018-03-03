@@ -22,6 +22,14 @@ class RuleDescriptionTest extends TestCase
 
         // TODO: Assert building with configuration schema
 
+        $messageIds = [
+            'messageId A',
+            'messageId B',
+        ];
+        $updatedRuleDescription = $ruleDescription->usingMessageIds($messageIds);
+        self::assertTrue($updatedRuleDescription === $ruleDescription);
+        self::assertEquals($messageIds, $ruleDescription->getMessageIds());
+
         $rejectedExamples = [
             'rejected example A',
             'rejected example B',
