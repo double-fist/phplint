@@ -26,7 +26,8 @@
     ],
     "require": {
         "nikic/php-parser": "^4",
-        "php": ">=7.0.0"
+        "php": ">=7.0.0",
+        "phpunit/phpunit": "^6.5"
     },
     "require-dev": {
         "viison/style-guide": "^2"
