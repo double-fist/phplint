@@ -27,7 +27,7 @@ class RuleRejectionAssertion extends AbstractRuleAssertion
         $lintResult = new LintResult();
 
         $this->getRule()->validate($sourceContext->getAst(), $lintContext, $lintResult);
-        Assert::assertGreaterThan(0, $lintResult->getViolations(), $assertionMessage);
+        Assert::assertNotEmpty($lintResult->getViolations(), $assertionMessage);
     }
 
     /**

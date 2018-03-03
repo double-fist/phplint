@@ -27,7 +27,7 @@ class RuleAcceptanceAssertion extends AbstractRuleAssertion
         $lintResult = new LintResult();
 
         $this->getRule()->validate($sourceContext->getAst(), $lintContext, $lintResult);
-        Assert::assertCount(0, $lintResult->getViolations(), $assertionMessage);
+        Assert::assertEmpty($lintResult->getViolations(), $assertionMessage);
     }
 
     /**
