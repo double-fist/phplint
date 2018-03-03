@@ -39,7 +39,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "PhpLint\\Test\\": "tests/PhpLint/Test"
+            "PhpLint\\": "tests/PhpLint"
         }
     },
     "scripts": {
