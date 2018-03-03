@@ -9,5 +9,5 @@ interface AstNode
 
     public function get(string $key);
 
-    public function getChildren();
+    public function getChildren(): array;
 }

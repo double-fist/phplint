@@ -39,7 +39,7 @@ class ParserAstNode implements AstNode
         return $this->wrappedNode;
     }
 
-    public function getChildren()
+    public function getChildren(): array
     {
         $children = [];
 
