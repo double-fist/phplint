@@ -1,0 +1,56 @@
+{
+    "name": "doublefist/php-lint",
+    "description": "An AST based linter and formatter for PHP code.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jannik Jochem",
+            "homepage": "https://www.github.com/fixpunkt"
+        },
+        {
+            "name": "Sven Münnich",
+            "homepage": "https://www.github.com/svenmuennich"
+        }
+    ],
+    "minimum-stability": "stable",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "git@github.com:VIISON/composer-git-hooks-installer-plugin.git"
+        },
+        {
+            "type": "vcs",
+            "url": "git@github.com:VIISON/style-guide.git"
+        }
+    ],
+    "require": {
+        "nikic/php-parser": "^4",
+        "php": ">=7.0.0"
+    },
+    "require-dev": {
+        "viison/style-guide": "^2"
+    },
+    "autoload": {
+        "psr-4": {
+            "PhpLint\\": "src/PhpLint"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PhpLint\\Test\\": "tests/PhpLint/Test"
+        }
+    },
+    "scripts": {
+        "phpcs": "vendor/bin/phpcs -s -n .",
+        "phpcs:fix": "vendor/bin/phpcbf -s -n .",
+        "phplint": "echo \"Linting all PHP files...\"; LINT_RETURN=0; for FILE in $(find . -regex \".*\\.php\" -not -path \"./vendor/*\"); do if ! php -l \"$FILE\"; then LINT_RETURN=1; fi; done; exit $LINT_RETURN;"
+    },
+    "extra": {
+        "required-viison-git-hooks": {
+            "viison/style-guide": [
+                "shopware-plugin"
+            ]
+        }
+    }
+}

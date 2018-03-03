@@ -1,0 +1,200 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "9d30142f4eab436c04d6df0f66e17374",
+    "packages": [
+        {
+            "name": "nikic/php-parser",
+            "version": "v4.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nikic/PHP-Parser.git",
+                "reference": "9c18e3db49fa469f5feffe40dbd7b1ec2b61e41f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/9c18e3db49fa469f5feffe40dbd7b1ec2b61e41f",
+                "reference": "9c18e3db49fa469f5feffe40dbd7b1ec2b61e41f",
+                "shasum": ""
+            },
+            "require": {
+                "ext-tokenizer": "*",
+                "php": ">=7.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^6.5 || ^7.0"
+            },
+            "bin": [
+                "bin/php-parse"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "4.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "PhpParser\\": "lib/PhpParser"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Nikita Popov"
+                }
+            ],
+            "description": "A PHP parser written in PHP",
+            "keywords": [
+                "parser",
+                "php"
+            ],
+            "time": "2018-02-28T20:39:30+00:00"
+        }
+    ],
+    "packages-dev": [
+        {
+            "name": "squizlabs/php_codesniffer",
+            "version": "3.2.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/squizlabs/PHP_CodeSniffer.git",
+                "reference": "4842476c434e375f9d3182ff7b89059583aa8b27"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/4842476c434e375f9d3182ff7b89059583aa8b27",
+                "reference": "4842476c434e375f9d3182ff7b89059583aa8b27",
+                "shasum": ""
+            },
+            "require": {
+                "ext-simplexml": "*",
+                "ext-tokenizer": "*",
+                "ext-xmlwriter": "*",
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.0 || ^5.0 || ^6.0 || ^7.0"
+            },
+            "bin": [
+                "bin/phpcs",
+                "bin/phpcbf"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.x-dev"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Greg Sherwood",
+                    "role": "lead"
+                }
+            ],
+            "description": "PHP_CodeSniffer tokenizes PHP, JavaScript and CSS files and detects violations of a defined set of coding standards.",
+            "homepage": "http://www.squizlabs.com/php-codesniffer",
+            "keywords": [
+                "phpcs",
+                "standards"
+            ],
+            "time": "2018-02-20T21:35:23+00:00"
+        },
+        {
+            "name": "viison/composer-git-hooks-installer-plugin",
+            "version": "1.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/VIISON/composer-git-hooks-installer-plugin.git",
+                "reference": "33091a2533fc480da0aefbaafe54f211c08a79b2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/VIISON/composer-git-hooks-installer-plugin/zipball/33091a2533fc480da0aefbaafe54f211c08a79b2",
+                "reference": "33091a2533fc480da0aefbaafe54f211c08a79b2",
+                "shasum": ""
+            },
+            "require": {
+                "composer-plugin-api": "^1.0"
+            },
+            "require-dev": {
+                "composer/composer": "^1.3"
+            },
+            "type": "composer-plugin",
+            "extra": {
+                "class": "VIISON\\Composer\\GitHooksInstallerPlugin"
+            },
+            "autoload": {
+                "psr-4": {
+                    "VIISON\\Composer\\": "src/"
+                }
+            },
+            "support": {
+                "source": "https://github.com/VIISON/composer-git-hooks-installer-plugin/tree/1.3.0",
+                "issues": "https://github.com/VIISON/composer-git-hooks-installer-plugin/issues"
+            },
+            "time": "2017-07-21T14:29:37+00:00"
+        },
+        {
+            "name": "viison/style-guide",
+            "version": "2.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/VIISON/style-guide.git",
+                "reference": "6231166d65404b581e7ad43deab31df2fe1ffdb3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/VIISON/style-guide/zipball/6231166d65404b581e7ad43deab31df2fe1ffdb3",
+                "reference": "6231166d65404b581e7ad43deab31df2fe1ffdb3",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0",
+                "squizlabs/php_codesniffer": "^3.2",
+                "viison/composer-git-hooks-installer-plugin": "^1.3"
+            },
+            "type": "viison-git-hooks",
+            "extra": {
+                "available-viison-git-hooks": {
+                    "shopware-plugin": "git-hooks/shopware-plugin/"
+                }
+            },
+            "scripts": {
+                "phpcs": [
+                    "vendor/bin/phpcs -s -n ."
+                ],
+                "phpcs:fix": [
+                    "vendor/bin/phpcbf -s -n ."
+                ],
+                "phplint": [
+                    "echo \"Linting all PHP files...\"; LINT_RETURN=0; for FILE in $(find . -regex \".*\\.php\" -not -path \"./vendor/*\"); do if ! php -l \"$FILE\"; then LINT_RETURN=1; fi; done; exit $LINT_RETURN;"
+                ]
+            },
+            "support": {
+                "source": "https://github.com/VIISON/style-guide/tree/2.0.2",
+                "issues": "https://github.com/VIISON/style-guide/issues"
+            },
+            "time": "2018-02-20T17:20:57+00:00"
+        }
+    ],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {
+        "php": ">=7.0.0"
+    },
+    "platform-dev": []
+}
