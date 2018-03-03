@@ -1,5 +1,5 @@
 <?php
-namespace PhpLint\Test\Ast;
+namespace PhpLint\Test\PhpParser;
 
 use PhpLint\AbstractParser;
 use PhpLint\Ast\AstNode;
@@ -7,7 +7,7 @@ use PhpLint\Ast\AstNodeType;
 use PhpLint\PhpParser\PhpParser;
 use PhpLint\TestHelpers\AstTestCase;
 
-class ParserTest extends AstTestCase
+class PhpParserTest extends AstTestCase
 {
     /** @var PhpParser */
     protected $parser = null;
