@@ -18,7 +18,7 @@ class RuleAcceptanceAssertion extends AbstractRuleAssertion
     protected function doAssert(SourceContext $sourceContext)
     {
         $assertionMessage = sprintf(
-            "Failed asserting that rule \"%s\" accepts code:\n\n%s",
+            "Failed asserting that rule \"%s\" accepts code:\n\n%s\n",
             $this->getRule()->getDescription()->getIdentifier(),
             $this->getTestCode()
         );
