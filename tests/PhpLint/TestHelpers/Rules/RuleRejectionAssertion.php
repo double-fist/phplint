@@ -5,7 +5,7 @@ namespace PhpLint\TestHelpers\Rules;
 
 use Exception;
 use PhpLint\Ast\AstNode;
-use PhpLint\Ast\SourceContext;
+use PhpLint\PhpParser\PhpParserSourceContext;
 use PhpLint\Linter\LintContext;
 use PhpLint\Linter\LintResult;
 use PHPUnit\Framework\Assert;
@@ -15,7 +15,7 @@ class RuleRejectionAssertion extends AbstractRuleAssertion
     /**
      * @inheritdoc
      */
-    protected function doAssert(SourceContext $sourceContext)
+    protected function doAssert(PhpParserSourceContext $sourceContext)
     {
         $assertionMessage = sprintf(
             "Failed asserting that rule \"%s\" rejects code:\n\n%s\n",

@@ -6,7 +6,7 @@ namespace PhpLint\Test\PhpParser;
 use PhpLint\AbstractParser;
 use PhpLint\Ast\AstNode;
 use PhpLint\Ast\AstNodeType;
-use PhpLint\Ast\SourceContext;
+use PhpLint\PhpParser\PhpParserSourceContext;
 use PhpLint\PhpParser\PhpParser;
 use PhpLint\TestHelpers\AstTestCase;
 
@@ -37,7 +37,7 @@ PROGRAM;
 
         $sourceContext = $this->parser->parse($program, 'test.php');
 
-        $this->assertInstanceOf(SourceContext::class, $sourceContext);
+        $this->assertInstanceOf(PhpParserSourceContext::class, $sourceContext);
         $this->assertEquals('test.php', $sourceContext->getPath());
     }
 
@@ -102,5 +102,24 @@ PROGRAM;
         $nameNode = $namespaceNode->get('name');
         $this->assertNodeType(AstNodeType::NAME, $nameNode);
         $this->assertEquals(['PhpLint', 'Test', 'Ast'], $nameNode->get('parts'));
+    }
+
+    public function testCallGetChildrenOnAParsedNamespace()
+    {
+        $program = <<<PROGRAM
+<?php
+namespace PhpLint\Test\Ast;
+
+class Test
+{
+}
+PROGRAM;
+
+        $sourceContext = $this->parser->parse($program, 'test.php');
+        $children = $sourceContext->getAst()->get('contents')[0]->getChildren();
+
+        $this->assertCount(2, $children);
+        $this->assertNodeType(AstNodeType::NAME, $children[0]);
+        $this->assertNodeType(AstNodeType::CLASS_DECLARATION, $children[1]);
     }
 }

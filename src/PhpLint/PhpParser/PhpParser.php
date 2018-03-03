@@ -6,7 +6,6 @@ namespace PhpLint\PhpParser;
 use PhpLint\AbstractParser;
 use PhpLint\Ast\AstNode;
 use PhpLint\Ast\AstNodeType;
-use PhpLint\Ast\SimpleAstNode;
 use PhpLint\Ast\SourceContext;
 use PhpParser\Lexer;
 use PhpParser\Node\Name;
@@ -44,14 +43,14 @@ class PhpParser extends AbstractParser
     {
         $parserResult = $this->phpParser->parse($code);
 
-        $astRoot = new SimpleAstNode(
+        $astRoot = new PhpParserAstNode(
             AstNodeType::SOURCE_ROOT,
             [
                 'contents' => $this->transformPhpParserNodes($parserResult),
             ]
         );
 
-        return new SourceContext(
+        return new PhpParserSourceContext(
             $astRoot,
             $this->lexer->getTokens(),
             $code,
@@ -63,28 +62,31 @@ class PhpParser extends AbstractParser
     {
         switch (true) {
             case $parserNode instanceof Namespace_:
-                return new SimpleAstNode(
+                return new PhpParserAstNode(
                     AstNodeType::NAMESPACE,
                     [
                         'name' => $this->transformPhpParserNode($parserNode->name),
                         'statements' => $this->transformPhpParserNodes($parserNode->stmts),
-                    ]
+                    ],
+                    $parserNode
                 );
 
             case $parserNode instanceof Name:
-                return new SimpleAstNode(
+                return new PhpParserAstNode(
                     AstNodeType::NAME,
                     [
                         'parts' => $parserNode->parts,
-                    ]
+                    ],
+                    $parserNode
                 );
 
             case $parserNode instanceof Class_:
-                return new SimpleAstNode(
+                return new PhpParserAstNode(
                     AstNodeType::CLASS_DECLARATION,
                     [
                         'name' => $parserNode->name,
-                    ]
+                    ],
+                    $parserNode
                 );
 
             default:
