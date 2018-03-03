@@ -6,16 +6,16 @@ namespace PhpLint\Plugin;
 /**
  * Implement this interface in a class named 'Config' in the namespace PhpLint\Plugin\<VENDOR>\<NAME>, e.g.:
  *
- *  namespace PhpLint\Plugin\Acme\MyPlugin;
+ *  namespace PhpLint\Plugin\Acme\MyConfig;
  *
- *  class Config {}
+ *  class Config implements PhpLint\Plugin\ConfigPlugin {}
  */
 interface ConfigPlugin
 {
     /**
-     * The name must following the format 'phplint-config-<VENDOR>-<NAME>', e.g.:
+     * The name must following the format '<VENDOR>/<NAME>' and correspond to the chosen namespace, e.g.:
      *
-     *  phplint-config-acme-my-plugin
+     *  Acme/MyConfig
      *
      * @return string
      */

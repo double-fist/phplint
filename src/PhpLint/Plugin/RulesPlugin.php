@@ -10,14 +10,14 @@ use PhpLint\Rules\Rule;
  *
  *  namespace PhpLint\Plugin\Acme\MyPlugin;
  *
- *  class Rules {}
+ *  class Rules implements PhpLint\Plugin\RulesPlugin {}
  */
 interface RulesPlugin
 {
     /**
-     * The name must following the format 'phplint-plugin-<VENDOR>-<NAME>', e.g.:
+     * The name must following the format '<VENDOR>/<NAME>' and correspond to the chosen namespace, e.g.:
      *
-     *  phplint-plugin-acme-my-plugin
+     *  Acme/MyPlugin
      *
      * @return string
      */
