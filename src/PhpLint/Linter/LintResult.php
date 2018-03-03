@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace PhpLint\Linter;
 
+use PhpLint\Ast\AstNode;
+
 class LintResult
 {
     /**
@@ -19,10 +21,10 @@ class LintResult
     }
 
     /**
-     * @param TODO $node
+     * @param AstNode $node
      * @param string $messageId
      */
-    public function reportViolation($node, string $messageId)
+    public function reportViolation(AstNode $node, string $messageId)
     {
         $this->violations[] = new RuleViolation($node, $messageId);
     }

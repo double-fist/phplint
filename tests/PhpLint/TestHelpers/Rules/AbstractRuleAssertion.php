@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace PhpLint\TestHelpers\Rules;
 
 use Exception;
+use PhpLint\Ast\AstNode;
 use PhpLint\Rules\Rule;
 use PHPUnit\Framework\ExpectationFailedException;
 
@@ -65,20 +66,20 @@ abstract class AbstractRuleAssertion
 
     /**
      * @param string $code
-     * @return TODO
+     * @return AstNode
      */
-    protected function createAst(string $code)
+    protected function createAst(string $code): AstNode
     {
         // TODO: Create AST
-        return [];
+        return null;
     }
 
     /**
      * Implement the actual assertions here.
      *
-     * @param TODO $ast
+     * @param AstNode $ast
      */
-    abstract protected function assertAst($ast);
+    abstract protected function assertAst(AstNode $ast);
 
     /**
      * @param Exception $previousException

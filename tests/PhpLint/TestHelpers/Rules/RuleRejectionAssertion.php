@@ -4,16 +4,17 @@ declare(strict_types=1);
 namespace PhpLint\TestHelpers\Rules;
 
 use Exception;
-use PHPUnit\Framework\Assert;
+use PhpLint\Ast\AstNode;
 use PhpLint\Linter\LintContext;
 use PhpLint\Linter\LintResult;
+use PHPUnit\Framework\Assert;
 
 class RuleRejectionAssertion extends AbstractRuleAssertion
 {
     /**
      * @inheritdoc
      */
-    protected function assertAst($ast)
+    protected function assertAst(AstNode $ast)
     {
         $assertionMessage = sprintf(
             "Failed asserting that rule \"%s\" rejects code:\n\n%s",

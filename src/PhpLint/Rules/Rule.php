@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace PhpLint\Rules;
 
+use PhpLint\Ast\AstNode;
 use PhpLint\Linter\LintContext;
 use PhpLint\Linter\LintResult;
 
@@ -24,9 +25,9 @@ interface Rule
     public function getTypes(): array;
 
     /**
-     * @param TODO $node
+     * @param AstNode $node
      * @param LintContext $context
      * @param LintResult $result
      */
-    public function validate($node, LintContext $context, LintResult $result);
+    public function validate(AstNode $node, LintContext $context, LintResult $result);
 }

@@ -3,10 +3,12 @@ declare(strict_types=1);
 
 namespace PhpLint\Linter;
 
+use PhpLint\Ast\AstNode;
+
 class RuleViolation
 {
     /**
-     * @var TODO $node
+     * @var AstNode $node
      */
     protected $node;
 
@@ -16,19 +18,19 @@ class RuleViolation
     protected $messageId;
 
     /**
-     * @param TODO $node
+     * @param AstNode $node
      * @param string $messageId
      */
-    public function __construct($node, string $messageId)
+    public function __construct(AstNode $node, string $messageId)
     {
         $this->node = $node;
         $this->messageId = $messageId;
     }
 
     /**
-     * @return TODO $node
+     * @return AstNode $node
      */
-    public function getNode()
+    public function getNode(): AstNode
     {
         $this->node;
     }

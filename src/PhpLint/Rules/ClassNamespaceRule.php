@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace PhpLint\Rules;
 
+use PhpLint\Ast\AstNode;
 use PhpLint\Linter\LintContext;
 use PhpLint\Linter\LintResult;
 
@@ -46,7 +47,7 @@ class ClassNamespaceRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    public function validate($node, LintContext $context, LintResult $result)
+    public function validate(AstNode $node, LintContext $context, LintResult $result)
     {
         // TODO: Implement rule validation
     }

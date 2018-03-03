@@ -4,10 +4,11 @@ declare(strict_types=1);
 namespace PhpLint\TestHelpers\Rules;
 
 use Exception;
-use PHPUnit\Framework\Assert;
+use PhpLint\Ast\AstNode;
 use PhpLint\Linter\LintContext;
 use PhpLint\Linter\LintResult;
 use PhpLint\Rules\Rule;
+use PHPUnit\Framework\Assert;
 
 class RuleFixAssertion extends AbstractRuleAssertion
 {
@@ -29,7 +30,7 @@ class RuleFixAssertion extends AbstractRuleAssertion
     /**
      * @inheritdoc
      */
-    protected function assertAst($ast)
+    protected function assertAst(AstNode $ast)
     {
         $assertionMessage = sprintf(
             "Failed asserting that rule \"%s\" fixes code:\n\n%s",
