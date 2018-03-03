@@ -32,7 +32,7 @@ class RuleViolation
      */
     public function getNode(): AstNode
     {
-        $this->node;
+        return $this->node;
     }
 
     /**
@@ -40,6 +40,6 @@ class RuleViolation
      */
     public function getMessageId(): string
     {
-        $this->messageId;
+        return $this->messageId;
     }
 }
