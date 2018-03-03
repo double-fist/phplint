@@ -6,7 +6,7 @@ namespace PhpLint\Test\PhpParser;
 use PhpLint\AbstractParser;
 use PhpLint\Ast\AstNode;
 use PhpLint\Ast\AstNodeType;
-use PhpLint\PhpParser\PhpParserSourceContext;
+use PhpLint\PhpParser\ParserContext;
 use PhpLint\PhpParser\PhpParser;
 use PhpLint\TestHelpers\AstTestCase;
 
@@ -37,7 +37,7 @@ PROGRAM;
 
         $sourceContext = $this->parser->parse($program, 'test.php');
 
-        $this->assertInstanceOf(PhpParserSourceContext::class, $sourceContext);
+        $this->assertInstanceOf(ParserContext::class, $sourceContext);
         $this->assertEquals('test.php', $sourceContext->getPath());
     }
 

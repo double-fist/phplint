@@ -5,7 +5,7 @@ namespace PhpLint\TestHelpers\Rules;
 
 use Exception;
 use PhpLint\Ast\AstNode;
-use PhpLint\PhpParser\PhpParserSourceContext;
+use PhpLint\PhpParser\ParserContext;
 use PhpLint\Linter\LintContext;
 use PhpLint\Linter\LintResult;
 use PhpLint\Rules\Rule;
@@ -31,7 +31,7 @@ class RuleFixAssertion extends AbstractRuleAssertion
     /**
      * @inheritdoc
      */
-    protected function doAssert(PhpParserSourceContext $sourceContext)
+    protected function doAssert(ParserContext $sourceContext)
     {
         $assertionMessage = sprintf(
             "Failed asserting that rule \"%s\" fixes code:\n\n%s\n",

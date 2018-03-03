@@ -43,14 +43,14 @@ class PhpParser extends AbstractParser
     {
         $parserResult = $this->phpParser->parse($code);
 
-        $astRoot = new PhpParserAstNode(
+        $astRoot = new ParserAstNode(
             AstNodeType::SOURCE_ROOT,
             [
                 'contents' => $this->transformPhpParserNodes($parserResult),
             ]
         );
 
-        return new PhpParserSourceContext(
+        return new ParserContext(
             $astRoot,
             $this->lexer->getTokens(),
             $code,
@@ -62,7 +62,7 @@ class PhpParser extends AbstractParser
     {
         switch (true) {
             case $parserNode instanceof Namespace_:
-                return new PhpParserAstNode(
+                return new ParserAstNode(
                     AstNodeType::NAMESPACE,
                     [
                         'name' => $this->transformPhpParserNode($parserNode->name),
@@ -72,7 +72,7 @@ class PhpParser extends AbstractParser
                 );
 
             case $parserNode instanceof Name:
-                return new PhpParserAstNode(
+                return new ParserAstNode(
                     AstNodeType::NAME,
                     [
                         'parts' => $parserNode->parts,
@@ -81,7 +81,7 @@ class PhpParser extends AbstractParser
                 );
 
             case $parserNode instanceof Class_:
-                return new PhpParserAstNode(
+                return new ParserAstNode(
                     AstNodeType::CLASS_DECLARATION,
                     [
                         'name' => $parserNode->name,

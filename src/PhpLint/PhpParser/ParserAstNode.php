@@ -6,7 +6,7 @@ namespace PhpLint\PhpParser;
 use PhpLint\Ast\AstNode;
 use PhpParser\Node;
 
-class PhpParserAstNode implements AstNode
+class ParserAstNode implements AstNode
 {
     /** @var string the type of the AST node as defined by NodeType */
     private $type;

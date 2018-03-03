@@ -5,7 +5,7 @@ namespace PhpLint\TestHelpers\Rules;
 
 use Exception;
 use PhpLint\Ast\AstNode;
-use PhpLint\PhpParser\PhpParserSourceContext;
+use PhpLint\PhpParser\ParserContext;
 use PhpLint\PhpParser\PhpParser;
 use PhpLint\Rules\Rule;
 use PHPUnit\Framework\ExpectationFailedException;
@@ -83,9 +83,9 @@ abstract class AbstractRuleAssertion
     /**
      * Implement the actual assertions here.
      *
-     * @param PhpParserSourceContext $sourceContext
+     * @param ParserContext $sourceContext
      */
-    abstract protected function doAssert(PhpParserSourceContext $sourceContext);
+    abstract protected function doAssert(ParserContext $sourceContext);
 
     /**
      * @param Exception $previousException
