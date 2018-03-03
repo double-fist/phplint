@@ -5,6 +5,8 @@ namespace PhpLint\TestHelpers\Rules;
 
 use Exception;
 use PhpLint\Ast\AstNode;
+use PhpLint\Ast\SourceContext;
+use PhpLint\PhpParser\PhpParser;
 use PhpLint\Rules\Rule;
 use PHPUnit\Framework\ExpectationFailedException;
 
@@ -21,6 +23,11 @@ abstract class AbstractRuleAssertion
     protected $testCode;
 
     /**
+     * @var PhpParser
+     */
+    protected $parser;
+
+    /**
      * @param Rule $rule
      * @param string $testCode
      */
@@ -28,6 +35,7 @@ abstract class AbstractRuleAssertion
     {
         $this->rule = $rule;
         $this->testCode = $testCode;
+        $this->parser = new PhpParser();
     }
 
     /**
@@ -47,14 +55,22 @@ abstract class AbstractRuleAssertion
     }
 
     /**
+     * @return PhpParser
+     */
+    public function getParser(): PhpParser
+    {
+        return $this->parser;
+    }
+
+    /**
      * Executes the assertion of this test.
      */
     public function assert()
     {
         try {
             $code = $this->getTestCode();
-            $ast = $this->createAst($code);
-            $this->assertAst($ast);
+            $sourceContext = $this->getParser()->parse($code);
+            $this->doAssert($sourceContext);
         } catch (ExpectationFailedException $exception) {
             // Failed assertion
             throw $exception;
@@ -65,21 +81,11 @@ abstract class AbstractRuleAssertion
     }
 
     /**
-     * @param string $code
-     * @return AstNode
-     */
-    protected function createAst(string $code): AstNode
-    {
-        // TODO: Create AST
-        return null;
-    }
-
-    /**
      * Implement the actual assertions here.
      *
-     * @param AstNode $ast
+     * @param SourceContext $sourceContext
      */
-    abstract protected function assertAst(AstNode $ast);
+    abstract protected function doAssert(SourceContext $sourceContext);
 
     /**
      * @param Exception $previousException

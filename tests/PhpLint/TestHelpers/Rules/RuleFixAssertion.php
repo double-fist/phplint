@@ -5,6 +5,7 @@ namespace PhpLint\TestHelpers\Rules;
 
 use Exception;
 use PhpLint\Ast\AstNode;
+use PhpLint\Ast\SourceContext;
 use PhpLint\Linter\LintContext;
 use PhpLint\Linter\LintResult;
 use PhpLint\Rules\Rule;
@@ -30,7 +31,7 @@ class RuleFixAssertion extends AbstractRuleAssertion
     /**
      * @inheritdoc
      */
-    protected function assertAst(AstNode $ast)
+    protected function doAssert(SourceContext $sourceContext)
     {
         $assertionMessage = sprintf(
             "Failed asserting that rule \"%s\" fixes code:\n\n%s",
@@ -38,14 +39,14 @@ class RuleFixAssertion extends AbstractRuleAssertion
             $this->getTestCode()
         );
 
-        $context = new LintContext();
+        $lintContext = new LintContext();
         $lintResult = new LintResult();
 
-        $this->getRule()->validate($ast, $context, $lintResult);
+        $this->getRule()->validate($sourceContext->getAst(), $lintContext, $lintResult);
         Assert::assertGreaterThan(0, $lintResult->getViolations(), $assertionMessage);
 
         // TODO: Apply the proposed fixes and assert the results
-        $expectedAst = $this->createAst($this->fixedCode);
+        $expectedSourceContext = $this->getParser()->parse($this->fixedCode);
     }
 
     /**
