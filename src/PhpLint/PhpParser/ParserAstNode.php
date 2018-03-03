@@ -17,11 +17,20 @@ class ParserAstNode implements AstNode
     /** @var Node|null */
     private $wrappedNode = null;
 
+    /**
+     * @var AstNode
+     */
+    private $parent = null;
+
     public function __construct(string $type, array $properties = [], Node $wrappedNode = null)
     {
         $this->type = $type;
         $this->properties = $properties;
         $this->wrappedNode = $wrappedNode;
+
+        foreach ($this->getChildren() as $child) {
+            $child->setParent($this);
+        }
     }
 
     public function getType(): string
@@ -37,6 +46,16 @@ class ParserAstNode implements AstNode
     public function getWrappedNode()
     {
         return $this->wrappedNode;
+    }
+
+    public function setParent(AstNode $parent)
+    {
+        $this->parent = $parent;
+    }
+
+    public function getParent()
+    {
+        return $this->parent;
     }
 
     public function getChildren(): array
