@@ -1,5 +1,5 @@
 {
-    "name": "doublefist/php-lint",
+    "name": "double-fist/phplint",
     "description": "An AST based linter and formatter for PHP code.",
     "type": "library",
     "license": "MIT",
