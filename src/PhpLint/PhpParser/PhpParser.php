@@ -7,6 +7,8 @@ use PhpLint\AbstractParser;
 use PhpLint\Ast\AstNode;
 use PhpLint\Ast\AstNodeType;
 use PhpLint\Ast\SimpleAstNode;
+use PhpLint\Ast\SourceContext;
+use PhpParser\Lexer;
 use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\Namespace_;
@@ -17,25 +19,44 @@ class PhpParser extends AbstractParser
     /** @var \PhpParser\Parser $phpParser */
     private $phpParser;
 
+    private $lexer;
+
     public function __construct()
     {
         $parserFactory = new ParserFactory();
-        $this->phpParser = $parserFactory->create(ParserFactory::PREFER_PHP7);
+        $this->lexer = new Lexer(
+            [
+                'usedAttributes' => [
+                    'comments',
+                    'startLine',
+                    'endLine',
+                    'startTokenPos',
+                    'endTokenPos',
+                    'startFilePos',
+                    'endFilePos',
+                ],
+            ]
+        );
+        $this->phpParser = $parserFactory->create(ParserFactory::PREFER_PHP7, $this->lexer);
     }
 
-    public function parse(string $path, string $code): AstNode
+    public function parse(string $code, string $path = null): SourceContext
     {
         $parserResult = $this->phpParser->parse($code);
 
-        $sourceFileNode = new SimpleAstNode(
-            AstNodeType::SOURCE_FILE,
+        $astRoot = new SimpleAstNode(
+            AstNodeType::SOURCE_ROOT,
             [
                 'contents' => $this->transformPhpParserNodes($parserResult),
-                'path' => $path,
             ]
         );
 
-        return $sourceFileNode;
+        return new SourceContext(
+            $astRoot,
+            $this->lexer->getTokens(),
+            $code,
+            $path
+        );
     }
 
     private function transformPhpParserNode($parserNode): AstNode

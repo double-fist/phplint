@@ -6,6 +6,7 @@ namespace PhpLint\Test\PhpParser;
 use PhpLint\AbstractParser;
 use PhpLint\Ast\AstNode;
 use PhpLint\Ast\AstNodeType;
+use PhpLint\Ast\SourceContext;
 use PhpLint\PhpParser\PhpParser;
 use PhpLint\TestHelpers\AstTestCase;
 
@@ -27,19 +28,30 @@ class PhpParserTest extends AstTestCase
         $this->assertInstanceOf(PhpParser::class, $parser);
     }
 
-    public function testParsingAnEmptyProgram()
+    public function testSourceContextHasAPath()
     {
         $program = <<<PROGRAM
 <?php
 
 PROGRAM;
 
-        $node = $this->parser->parse('test.php', $program);
+        $sourceContext = $this->parser->parse($program, 'test.php');
 
-        $this->assertInstanceOf(AstNode::class, $node);
-        $this->assertEquals(AstNodeType::SOURCE_FILE, $node->getType());
-        $this->assertEquals('test.php', $node->get('path'));
-        $this->assertCount(0, $node->get('contents'));
+        $this->assertInstanceOf(SourceContext::class, $sourceContext);
+        $this->assertEquals('test.php', $sourceContext->getPath());
+    }
+
+    public function testSourceRootGetsParsed()
+    {
+        $program = <<<PROGRAM
+<?php
+
+PROGRAM;
+
+        $sourceContext = $this->parser->parse($program, 'test.php');
+
+        $sourceRoot = $sourceContext->getAst();
+        $this->assertNodeType(AstNodeType::SOURCE_ROOT, $sourceRoot);
     }
 
     public function testParsingANamespaceDeclaration()
@@ -49,14 +61,14 @@ PROGRAM;
 namespace PhpLint\Test\Ast;
 PROGRAM;
 
-        $node = $this->parser->parse('test.php', $program);
+        $sourceContext = $this->parser->parse($program, 'test.php');
 
-        $this->assertEquals(AstNodeType::SOURCE_FILE, $node->getType());
-        $contents = $node->get('contents');
+        /** @var AstNode[] $sourceContents */
+        $sourceContents = $sourceContext->getAst()->get('contents');
+        $this->assertCount(1, $sourceContents);
 
-        $this->assertCount(1, $contents);
         /** @var AstNode $namespaceNode */
-        $namespaceNode = $contents[0];
+        $namespaceNode = $sourceContents[0];
         $this->assertNodeType(AstNodeType::NAMESPACE, $namespaceNode);
 
         /** @var AstNode $nameNode */
@@ -76,14 +88,14 @@ class Test
 }
 PROGRAM;
 
-        $node = $this->parser->parse('test.php', $program);
+        $sourceContext = $this->parser->parse($program, 'test.php');
 
-        $this->assertEquals(AstNodeType::SOURCE_FILE, $node->getType());
-        $contents = $node->get('contents');
+        /** @var AstNode[] $sourceContents */
+        $sourceContents = $sourceContext->getAst()->get('contents');
+        $this->assertCount(1, $sourceContents);
 
-        $this->assertCount(1, $contents);
         /** @var AstNode $namespaceNode */
-        $namespaceNode = $contents[0];
+        $namespaceNode = $sourceContents[0];
         $this->assertNodeType(AstNodeType::NAMESPACE, $namespaceNode);
 
         /** @var AstNode $nameNode */

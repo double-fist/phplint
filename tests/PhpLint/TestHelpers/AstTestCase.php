@@ -14,4 +14,4 @@ class AstTestCase extends TestCase
     }
 }
 
-Blacklist::$blacklistedClassNames['PhpLint\Test\Helpers\AstTestCase'] = 1;
+Blacklist::$blacklistedClassNames['PhpLint\TestHelpers\AstTestCase'] = 1;

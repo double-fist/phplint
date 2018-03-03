@@ -5,7 +5,7 @@ namespace PhpLint\Ast;
 
 class AstNodeType
 {
-    const SOURCE_FILE = 'SOURCE_FILE';
+    const SOURCE_ROOT = 'SOURCE_ROOT';
     const NAMESPACE = 'NAMESPACE';
     const NAME = 'NAME';
     const CLASS_DECLARATION = 'CLASS';
