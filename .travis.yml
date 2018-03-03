@@ -15,4 +15,3 @@ install:
 script:
   - composer phplint
   - composer phpcs
-  - composer phpunit
