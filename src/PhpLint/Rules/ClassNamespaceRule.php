@@ -21,13 +21,13 @@ class ClassNamespaceRule extends AbstractRule
                 ])
                 ->acceptsExamples([
                     RuleDescription::createPhpCodeExample(
-                        'namespace My\Namespace;',
+                        'namespace PhpLint\Rules;',
                         'class AnyClass {}'
                     ),
                     RuleDescription::createPhpCodeExample(
-                        'namespace My\Namespace;',
+                        'namespace PhpLint\Rules;',
                         'class AnyClass {}',
-                        'namespace My\Namespace\Two;',
+                        'namespace PhpLint\Rules\Two;',
                         'class AnyOtherClass {}'
                     ),
                 ])
