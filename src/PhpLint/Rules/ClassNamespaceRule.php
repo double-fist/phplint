@@ -17,14 +17,14 @@ class ClassNamespaceRule extends AbstractRule
             RuleDescription::forRuleWithIdentifier(self::RULE_IDENTIFIER)
                 ->explainedBy('Enforces that all classes must be contained in a PSR-4 namespace.')
                 ->rejectsExamples([
-                    RuleDescription::createCodeExample('class AnyClass {}'),
+                    RuleDescription::createPhpCodeExample('class AnyClass {}'),
                 ])
                 ->acceptsExamples([
-                    RuleDescription::createCodeExample(
+                    RuleDescription::createPhpCodeExample(
                         'namespace My\Namespace;',
                         'class AnyClass {}'
                     ),
-                    RuleDescription::createCodeExample(
+                    RuleDescription::createPhpCodeExample(
                         'namespace My\Namespace;',
                         'class AnyClass {}',
                         'namespace My\Namespace\Two;',

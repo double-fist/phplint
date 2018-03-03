@@ -157,9 +157,24 @@ class RuleDescription
 
     /**
      * @param string ...$lines
+     * @return string
      */
-    public static function createCodeExample(string ...$lines): string
+    public static function createPlainCodeExample(string ...$lines): string
     {
         return implode("\n", $lines);
+    }
+
+    /**
+     * @param string ...$lines
+     * @return string
+     */
+    public static function createPhpCodeExample(string ...$lines): string
+    {
+        $code = self::createPlainCodeExample(...$lines);
+        if (mb_strpos($code, '<?') !== 0) {
+            $code = "<?php\n" . $code;
+        }
+
+        return $code;
     }
 }
