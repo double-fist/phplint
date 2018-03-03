@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace PhpLint\PhpParser;
 
 use PhpLint\AbstractParser;
