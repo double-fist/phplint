@@ -10,6 +10,7 @@ use PhpLint\Ast\SourceContext;
 use PhpParser\Lexer;
 use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\Class_;
+use PhpParser\Node\Stmt\ClassConst;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Namespace_;
 use PhpParser\ParserFactory;
@@ -68,6 +69,16 @@ class PhpParser extends AbstractParser
                     [
                         'name' => $parserNode->name,
                         'statements' => $this->transformPhpParserNodes($parserNode->stmts),
+                    ],
+                    $parserNode
+                );
+
+            case $parserNode instanceof ClassConst:
+                return new ParserAstNode(
+                    AstNodeType::CLASS_CONST,
+                    [
+                        'name' => $parserNode->consts[0]->name,
+                        'value' => $parserNode->consts[0]->value,
                     ],
                     $parserNode
                 );
