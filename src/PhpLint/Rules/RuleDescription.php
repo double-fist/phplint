@@ -21,9 +21,9 @@ class RuleDescription
     protected $schema = null;
 
     /**
-     * @var string[]
+     * @var array
      */
-    protected $messageIds = [];
+    protected $messages = [];
 
     /**
      * @var string[]
@@ -80,12 +80,12 @@ class RuleDescription
     }
 
     /**
-     * @param array $messageIds
+     * @param array $messages
      * @return RuleDescription
      */
-    public function usingMessageIds(array $messageIds): RuleDescription
+    public function usingMessages(array $messages): RuleDescription
     {
-        $this->messageIds = $messageIds;
+        $this->messages = $messages;
 
         return $this;
     }
@@ -148,11 +148,11 @@ class RuleDescription
     }
 
     /**
-     * @return string[]
+     * @return array
      */
-    public function getMessageIds(): array
+    public function getMessages(): array
     {
-        return $this->messageIds;
+        return $this->messages;
     }
 
     /**
