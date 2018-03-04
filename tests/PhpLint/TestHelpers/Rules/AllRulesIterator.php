@@ -27,6 +27,7 @@ class AllRulesIterator extends ArrayIterator
         self::$rules = [
             new  Rules\ClassNameRule(),
             new  Rules\ClassNamespaceRule(),
+            new  Rules\MethodNameRule(),
             new  Rules\SingleClassInFileRule(),
             new  Rules\SingleNamespaceInFileRule(),
         ];

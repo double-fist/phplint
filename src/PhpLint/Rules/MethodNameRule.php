@@ -1,0 +1,92 @@
+<?php
+declare(strict_types=1);
+
+namespace PhpLint\Rules;
+
+use PhpLint\Ast\AstNode;
+use PhpLint\Ast\AstNodeType;
+use PhpLint\Linter\LintContext;
+use PhpLint\Linter\LintResult;
+
+class MethodNameRule extends AbstractRule
+{
+    const RULE_IDENTIFIER = 'method-name';
+    const MESSAGE_ID_METHOD_NAME_NOT_IN_CAMEL_CASE = 'methodNameNotInCamelCase';
+
+    public function __construct()
+    {
+        $this->setDescription(
+            RuleDescription::forRuleWithIdentifier(self::RULE_IDENTIFIER)
+                ->explainedBy('Enforces that all method names must be declared in \'camelCase\'.')
+                ->usingMessages([
+                    self::MESSAGE_ID_METHOD_NAME_NOT_IN_CAMEL_CASE => 'Method names must be declared in camelCase.',
+                ])
+                ->rejectsExamples([
+                    RuleDescription::createPhpCodeExample(
+                        'class AnyClass',
+                        '{',
+                        "\t" . 'public function MyMethod() {}',
+                        '}'
+                    ),
+                    RuleDescription::createPhpCodeExample(
+                        'class AnyClass',
+                        '{',
+                        "\t" . 'public function My_Method() {}',
+                        '}'
+                    ),
+                    RuleDescription::createPhpCodeExample(
+                        'class AnyClass',
+                        '{',
+                        "\t" . 'public function my_Method() {}',
+                        '}'
+                    ),
+                ])
+                ->acceptsExamples([
+                    RuleDescription::createPhpCodeExample(
+                        'class AnyClass',
+                        '{',
+                        "\t" . 'public function method() {}',
+                        '}'
+                    ),
+                    RuleDescription::createPhpCodeExample(
+                        'class AnyClass',
+                        '{',
+                        "\t" . 'public function myMethod() {}',
+                        '}'
+                    ),
+                    RuleDescription::createPhpCodeExample(
+                        'class AnyClass',
+                        '{',
+                        "\t" . 'public function myLongMethod() {}',
+                        '}'
+                    ),
+                ])
+        );
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getTypes(): array
+    {
+        return [
+            AstNodeType::CLASS_METHOD,
+        ];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function validate(AstNode $node, LintContext $context, LintResult $result)
+    {
+        $methodName = $node->get('name');
+        if (!$methodName || mb_strlen($methodName->name) === 0) {
+            return;
+        }
+
+        $methodNamePattern = '/^[a-z][A-Za-z]*$/';
+        if (preg_match($methodNamePattern, $methodName->name) !== 1) {
+            $result->reportViolation($node, self::MESSAGE_ID_METHOD_NAME_NOT_IN_CAMEL_CASE);
+        }
+    }
+}
