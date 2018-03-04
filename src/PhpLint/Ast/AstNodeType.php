@@ -9,5 +9,6 @@ class AstNodeType
     const NAMESPACE = 'NAMESPACE';
     const NAME = 'NAME';
     const CLASS_DECLARATION = 'CLASS';
+    const CLASS_METHOD = 'CLASS_METHOD';
     const IDENTIFIER = 'NAME';
 }
