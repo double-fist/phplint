@@ -8,8 +8,10 @@ use PhpLint\Ast\AstNode;
 use PhpLint\PhpParser\ParserContext;
 use PhpLint\Linter\LintContext;
 use PhpLint\Linter\LintResult;
+use PhpLint\Linter\RuleViolation;
 use PhpLint\PhpParser\PhpParser;
 use PhpLint\Rules\Rule;
+use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\ExpectationFailedException;
 
 abstract class AbstractRuleAssertion
@@ -101,6 +103,34 @@ abstract class AbstractRuleAssertion
         }
         foreach ($children as $child) {
             $this->recursivelyValidateRule($child, $lintContext, $lintResult);
+        }
+    }
+
+    /**
+     * Asserts that all message IDs contained in the given $lintResult are defined in the rule's description.
+     *
+     * @param LintResult $lintResult
+     */
+    protected function assertLintResult(LintResult $lintResult)
+    {
+        $definedMessages = $this->getRule()->getDescription()->getMessages();
+        $usedMessageIds = array_map(
+            function (RuleViolation $violation) {
+                return $violation->getMessageId();
+            },
+            $lintResult->getViolations()
+        );
+
+        foreach ($usedMessageIds as $messageId) {
+            Assert::assertArrayHasKey(
+                $messageId,
+                $definedMessages,
+                sprintf(
+                    'Failed asserting that the message ID "%s" used by rule "%s" to report a violation is known to that rule.',
+                    $messageId,
+                    $this->getRule()->getDescription()->getIdentifier()
+                )
+            );
         }
     }
 
