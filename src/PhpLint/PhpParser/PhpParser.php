@@ -62,25 +62,6 @@ class PhpParser extends AbstractParser
     private function transformPhpParserNode($parserNode): AstNode
     {
         switch (true) {
-            case $parserNode instanceof Namespace_:
-                return new ParserAstNode(
-                    AstNodeType::NAMESPACE,
-                    [
-                        'name' => $this->transformPhpParserNode($parserNode->name),
-                        'statements' => $this->transformPhpParserNodes($parserNode->stmts),
-                    ],
-                    $parserNode
-                );
-
-            case $parserNode instanceof Name:
-                return new ParserAstNode(
-                    AstNodeType::NAME,
-                    [
-                        'parts' => $parserNode->parts,
-                    ],
-                    $parserNode
-                );
-
             case $parserNode instanceof Class_:
                 return new ParserAstNode(
                     AstNodeType::CLASS_DECLARATION,
@@ -96,6 +77,25 @@ class PhpParser extends AbstractParser
                     AstNodeType::CLASS_METHOD,
                     [
                         'name' => $parserNode->name,
+                    ],
+                    $parserNode
+                );
+
+            case $parserNode instanceof Name:
+                return new ParserAstNode(
+                    AstNodeType::NAME,
+                    [
+                        'parts' => $parserNode->parts,
+                    ],
+                    $parserNode
+                );
+
+            case $parserNode instanceof Namespace_:
+                return new ParserAstNode(
+                    AstNodeType::NAMESPACE,
+                    [
+                        'name' => $this->transformPhpParserNode($parserNode->name),
+                        'statements' => $this->transformPhpParserNodes($parserNode->stmts),
                     ],
                     $parserNode
                 );
