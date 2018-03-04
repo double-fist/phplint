@@ -27,7 +27,9 @@
     "require": {
         "nikic/php-parser": "^4",
         "php": ">=7.0.0",
-        "phpunit/phpunit": "^6.5"
+        "phpunit/phpunit": "^6.5",
+        "symfony/console": "^3.4",
+        "symfony/filesystem": "^3.4"
     },
     "require-dev": {
         "viison/style-guide": "^2"
@@ -42,6 +44,7 @@
             "PhpLint\\": "tests/PhpLint"
         }
     },
+    "bin": ["bin/phplint"],
     "scripts": {
         "phpcs": "vendor/bin/phpcs -s -n .",
         "phpcs:fix": "vendor/bin/phpcbf -s -n .",
