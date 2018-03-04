@@ -25,6 +25,7 @@ class AllRulesIterator extends ArrayIterator
 
         // Add any rules that shall be tested below
         self::$rules = [
+            new  Rules\ClassConstantNameRule(),
             new  Rules\ClassNameRule(),
             new  Rules\ClassNamespaceRule(),
             new  Rules\MethodNameRule(),
