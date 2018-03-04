@@ -5,66 +5,63 @@ namespace PhpLint\Ast;
 
 class SourceRange
 {
-    /** @var int */
-    private $startLine;
+    /** @var SourceLocation */
+    private $start;
 
-    /** @var int */
-    private $endLine;
-
-    /** @var int */
-    private $startColumn;
-
-    /** @var int */
-    private $endColumn;
+    /** @var SourceLocation */
+    private $end;
 
     /**
-     * @param int $startLine
-     * @param int $endLine
-     * @param int $startColumn
-     * @param int $endColumn
+     * @param SourceLocation $start
+     * @param SourceLocation $end
      */
-    public function __construct(int $startLine, int $endLine, int $startColumn, int $endColumn)
+    private function __construct(SourceLocation $start, SourceLocation $end)
     {
-        $this->startLine = $startLine;
-        $this->endLine = $endLine;
-        $this->startColumn = $startColumn;
-        $this->endColumn = $endColumn;
+        $this->start = $start;
+        $this->end = $end;
     }
 
     /**
-     * @return int
+     * @return SourceLocation
      */
-    public function getStartLine(): int
+    public function getStart(): SourceLocation
     {
-        return $this->startLine;
+        return $this->start;
     }
 
     /**
-     * @return int
+     * @return SourceLocation
      */
-    public function getEndLine(): int
+    public function getEnd(): SourceLocation
     {
-        return $this->endLine;
-    }
-
-    /**
-     * @return int
-     */
-    public function getStartColumn(): int
-    {
-        return $this->startColumn;
-    }
-
-    /**
-     * @return int
-     */
-    public function getEndColumn(): int
-    {
-        return $this->endColumn;
+        return $this->end;
     }
 
     public function __toString()
     {
-        return sprintf('%d:%d-%d:%d', $this->startLine, $this->startColumn, $this->endLine, $this->endColumn);
+        return sprintf(
+            '%s-%s',
+            $this->start,
+            $this->end
+        );
+    }
+
+    public static function between(SourceLocation $start, SourceLocation $end)
+    {
+        if ($start->isGreaterThan($end)) {
+            throw new \InvalidArgumentException(
+                sprintf('Given start source location %s is after given end source location %s', $start, $end)
+            );
+        }
+
+        return new self($start, $end);
+    }
+
+    public static function spanningRanges(SourceRange $range1, SourceRange $range2)
+    {
+        $start = $range1->getStart()->isSmallerThanOrEquals($range2->getStart()) ? $range1->getStart() : $range2->getStart();
+        $end = $range1->getEnd()->isGreaterThanOrEquals($range2->getEnd()) ? $range1->getEnd() : $range2->getEnd();
+
+        return self::between($start, $end);
     }
 }

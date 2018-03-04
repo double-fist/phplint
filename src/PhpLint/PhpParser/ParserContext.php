@@ -6,6 +6,7 @@ namespace PhpLint\PhpParser;
 use PhpLint\Ast\AstNode;
 use PhpLint\Ast\SourceContext;
 use PhpLint\Ast\SourceRange;
+use PhpLint\Ast\Token;
 
 class ParserContext implements SourceContext
 {
@@ -14,6 +15,7 @@ class ParserContext implements SourceContext
 
     private $content;
 
+    /** @var Token[] */
     private $tokens;
 
     private $ast;
@@ -83,6 +85,7 @@ class ParserContext implements SourceContext
     {
         $startToken = $this->tokens[$startTokenIndex];
         $endToken = $this->tokens[$endTokenIndex];
-        $a = 0;
+
+        return SourceRange::spanningRanges($startToken->getSourceRange(), $endToken->getSourceRange());
     }
 }

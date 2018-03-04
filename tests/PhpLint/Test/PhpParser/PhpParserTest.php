@@ -122,4 +122,28 @@ PROGRAM;
         $this->assertNodeType(AstNodeType::NAME, $children[0]);
         $this->assertNodeType(AstNodeType::CLASS_DECLARATION, $children[1]);
     }
+
+    public function testParsingASimpleStringVariableAssignment()
+    {
+        $program = <<<PROGRAM
+<?php
+\$a = 'asdf';
+PROGRAM;
+
+        $sourceContext = $this->parser->parse($program, 'test.php');
+
+        $exprNode= $sourceContext->getAst()->get('contents')[0];
+        $this->assertNodeType(AstNodeType::EXPRESSION, $exprNode);
+
+        $assignmentNode = $exprNode->get('expr');
+        $this->assertNodeType(AstNodeType::ASSIGNMENT, $assignmentNode);
+
+        $varNode = $assignmentNode->get('var');
+        $this->assertNodeType(AstNodeType::VARIABLE, $varNode);
+        $this->assertEquals('a', $varNode->get('name'));
+
+        $stringNode = $assignmentNode->get('expr');
+        $this->assertNodeType(AstNodeType::STRING, $stringNode);
+        $this->assertEquals('asdf', $stringNode->get('value'));
+    }
 }
