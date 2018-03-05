@@ -10,6 +10,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
 
+use PhpLint\Linter\LintConfiguration;
+use PhpLint\Linter\Linter;
+use RecursiveCallbackFilterIterator;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+
 class PhpLintCommand extends Command
 {
     const ARG_NAME_LINT_PATH = 'lint-path';
@@ -36,9 +42,41 @@ class PhpLintCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        // Normalize and check lint path
-        $filesystem = new Filesystem();
+        // Find all files at the given path
         $lintPath = $input->getArgument(self::ARG_NAME_LINT_PATH);
+        $lintPath = $this->normalizeLintPath($lintPath);
+        $phpFilePaths = $this->findPhpFiles($lintPath);
+        if (count($phpFilePaths) === 0) {
+            $output->writeln('Nothing to lint at path' . $lintPath);
+
+            return;
+        }
+
+        // TODO: Create config from the CLI options
+        $config = new LintConfiguration([]);
+
+        // Lint all PHP files found in the path
+        $output->writeln('Linting all files at path ' . $lintPath);
+        $linter = new Linter();
+        $result = $linter->lintFilesAtPaths($phpFilePaths, $config);
+        $output->writeln('Done!');
+
+        // TODO: Format the result
+        if (count($result) > 0) {
+            $output->writeln(sprintf('Found %d violations!', count($result)));
+        } else {
+            $output->writeln('No violations found.');
+        }
+    }
+
+    /**
+     * @param string $lintPath
+     * @return string
+     * @throws IOException
+     */
+    private function normalizeLintPath(string $lintPath): string
+    {
+        $filesystem = new Filesystem();
         if (!$filesystem->isAbsolutePath($lintPath)) {
             if ($lintPath === '.' || $lintPath === './') {
                 $lintPath = getcwd();
@@ -53,10 +91,40 @@ class PhpLintCommand extends Command
             throw new IOException('File file or directory is not readable.', 0, null, $lintPath);
         }
 
-        $output->writeln('Linting all files at path ' . $lintPath);
+        return $lintPath;
+    }
 
-        // TODO: Lint all files at specified path
+    /**
+     * @param string $path
+     * @param string[]
+     */
+    private function findPhpFiles(string $path): array
+    {
+        if (is_file($path)) {
+            return [$path];
+        }
 
-        $output->writeln('Done!');
+        // Create a directory iterator for finding all PHP files
+        $directoryIterator = new RecursiveDirectoryIterator($path);
+        $filterIterator = new RecursiveCallbackFilterIterator(
+            $directoryIterator,
+            function ($current, $key, $iterator) {
+                // Allow recursion
+                if ($iterator->hasChildren()) {
+                    return true;
+                }
+
+                return $current->isFile() && $current->getExtension() === 'php';
+            }
+        );
+
+        // List and sort the file paths
+        $phpFilePaths = [];
+        foreach (new RecursiveIteratorIterator($filterIterator) as $fileInfo) {
+            $phpFilePaths[] = $fileInfo->getPathname();
+        }
+        sort($phpFilePaths);
+
+        return $phpFilePaths;
     }
 }

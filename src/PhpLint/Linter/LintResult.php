@@ -3,14 +3,23 @@ declare(strict_types=1);
 
 namespace PhpLint\Linter;
 
+use Countable;
 use PhpLint\Ast\AstNode;
 
-class LintResult
+class LintResult implements Countable
 {
     /**
      * @var RuleViolation[]
      */
     protected $violations = [];
+
+    /**
+     * @inheritdoc
+     */
+    public function count()
+    {
+        return count($this->violations);
+    }
 
     /**
      * @return RuleViolation[]
