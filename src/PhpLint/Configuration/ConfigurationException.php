@@ -57,4 +57,16 @@ class ConfigurationException extends Exception
             (isset($pathInfo['extension'])) ? $pathInfo['extension'] : 'n/a'
         ));
     }
+
+    /**
+     * @param string $key
+     * @return ConfigurationException
+     */
+    public static function invalidKey(string $key): ConfigurationException
+    {
+        return new self(sprintf(
+            'The config key "%s" is invalid.',
+            $key
+        ));
+    }
 }
