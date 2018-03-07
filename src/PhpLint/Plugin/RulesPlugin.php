@@ -12,26 +12,21 @@ use PhpLint\Rules\Rule;
  *
  *  class Rules implements PhpLint\Plugin\RulesPlugin {}
  */
-interface RulesPlugin
+interface RulesPlugin extends Plugin
 {
     /**
-     * The name must following the format '<VENDOR>/<NAME>' and correspond to the chosen namespace, e.g.:
-     *
-     *  Acme/MyPlugin
-     *
-     * @return string
+     * @return string[]
      */
-    public function getName(): string;
+    public function getPlugins(): array;
 
     /**
      * @return string[]
      */
-    public function getRuleNames(): array;
+    public function getRules(): array;
 
     /**
      * @param string $ruleName
-     * @param TODO $lintConfig
      * @return Rule
      */
-    public function createRule(string $ruleName, $lintConfig): Rule;
+    public function createRule(string $ruleName): Rule;
 }

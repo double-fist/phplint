@@ -10,24 +10,20 @@ namespace PhpLint\Plugin;
  *
  *  class Config implements PhpLint\Plugin\ConfigPlugin {}
  */
-interface ConfigPlugin
+interface ConfigPlugin extends Plugin
 {
     /**
-     * The name must following the format '<VENDOR>/<NAME>' and correspond to the chosen namespace, e.g.:
-     *
-     *  Acme/MyConfig
-     *
-     * @return string
+     * @return string[]
      */
-    public function getName(): string;
+    public function getExtends(): array;
 
     /**
      * @return string[]
      */
-    public function getExtendedConfigNames(): array;
+    public function getPlugins(): array;
 
     /**
      * @return array
      */
-    public function getRuleConfigs(): array;
+    public function getRules(): array;
 }
