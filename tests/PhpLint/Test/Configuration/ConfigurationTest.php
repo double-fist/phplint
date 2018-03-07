@@ -14,22 +14,24 @@ class ConfigurationTest extends TestCase
     public function testMergeOntoConfigMergesExtendsCorrectly()
     {
         $targetConfig = new Configuration([
-            Configuration::KEY_EXTENDS => 'VendorA/ConfigA',
+            Configuration::KEY_EXTENDS => [
+                'VendorA/ConfigA' => 1,
+            ],
         ]);
         $overridingConfig = new Configuration([
             Configuration::KEY_EXTENDS => [
-                'VendorA/ConfigA',
-                'VendorB/ConfigA',
-                'VendorB/ConfigB',
+                'VendorA/ConfigA' => 2,
+                'VendorB/ConfigA' => 3,
+                'VendorB/ConfigB' => 4,
             ],
         ]);
         $mergedConfig = $overridingConfig->mergeOntoConfig($targetConfig);
         self::assertEquals($targetConfig, $mergedConfig->getParentConfig());
         self::assertEquals(
             [
-                'VendorA/ConfigA',
-                'VendorB/ConfigA',
-                'VendorB/ConfigB',
+                'VendorA/ConfigA' => 2,
+                'VendorB/ConfigA' => 3,
+                'VendorB/ConfigB' => 4,
             ],
             $mergedConfig->getExtends()
         );
@@ -42,23 +44,23 @@ class ConfigurationTest extends TestCase
     {
         $targetConfig = new Configuration([
             Configuration::KEY_PLUGINS => [
-                'VendorA/PluginA',
+                'VendorA/PluginA' => 1,
             ],
         ]);
         $overridingConfig = new Configuration([
             Configuration::KEY_PLUGINS => [
-                'VendorA/PluginA',
-                'VendorB/PluginA',
-                'VendorB/PluginB',
+                'VendorA/PluginA' => 2,
+                'VendorB/PluginA' => 3,
+                'VendorB/PluginB' => 4,
             ],
         ]);
         $mergedConfig = $overridingConfig->mergeOntoConfig($targetConfig);
         self::assertEquals($targetConfig, $mergedConfig->getParentConfig());
         self::assertEquals(
             [
-                'VendorA/PluginA',
-                'VendorB/PluginA',
-                'VendorB/PluginB',
+                'VendorA/PluginA' => 2,
+                'VendorB/PluginA' => 3,
+                'VendorB/PluginB' => 4,
             ],
             $mergedConfig->getPlugins()
         );

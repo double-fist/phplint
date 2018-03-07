@@ -68,12 +68,7 @@ class Configuration
      */
     public function getExtends(): array
     {
-        $extends = $this->get(self::KEY_EXTENDS) ?: [];
-        if (is_string($extends)) {
-            $extends = [$extends];
-        }
-
-        return $extends;
+        return $this->get(self::KEY_EXTENDS) ?: [];
     }
 
     /**
@@ -164,16 +159,16 @@ class Configuration
         $mergedConfigData = [];
 
         // Merge the extended configs
-        $mergedConfigData[self::KEY_EXTENDS] = array_values(array_unique(array_merge(
+        $mergedConfigData[self::KEY_EXTENDS] = array_merge(
             $baseConfig->getExtends(),
             $this->getExtends()
-        )));
+        );
 
         // Merge the required plugins
-        $mergedConfigData[self::KEY_PLUGINS] = array_values(array_unique(array_merge(
+        $mergedConfigData[self::KEY_PLUGINS] = array_merge(
             $baseConfig->getPlugins(),
             $this->getPlugins()
-        )));
+        );
 
         // Set 'root' if at least of the configs is root
         $mergedConfigData[self::KEY_ROOT] = $this->isRoot() || $baseConfig->isRoot();

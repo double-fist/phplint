@@ -46,18 +46,26 @@ class ConfigurationLoader
             if (is_string($extends)) {
                 $extends = [$extends];
             }
+            $extendedConfigPlugins = [];
             foreach ($extends as $configPluginName) {
                 $plugin = $this->pluginLoader->loadPlugin($configPluginName, PluginLoader::PLUGIN_TYPE_CONFIG);
+                $extendedConfigPlugins[$configPluginName] = $plugin;
                 $pluginConfig = $this->loadData($plugin->toArray());
                 $parentConfig = ($parentConfig) ? $pluginConfig->mergeOntoConfig($parentConfig) : $pluginConfig;
             }
+            $configData[Configuration::KEY_EXTENDS] = $extendedConfigPlugins;
         }
 
         // Load any rule plugins the config depends on
         if (isset($configData[Configuration::KEY_PLUGINS])) {
+            $extendedRulesPlugins = [];
             foreach ($configData[Configuration::KEY_PLUGINS] as $rulesPluginName) {
-                $this->pluginLoader->loadPlugin($rulesPluginName, PluginLoader::PLUGIN_TYPE_RULES);
+                $extendedRulesPlugins[$rulesPluginName] = $this->pluginLoader->loadPlugin(
+                    $rulesPluginName,
+                    PluginLoader::PLUGIN_TYPE_RULES
+                );
             }
+            $configData[Configuration::KEY_PLUGINS] = $extendedRulesPlugins;
         }
 
         // Merge a new config using the passed data onto the parent config, if possible
