@@ -46,15 +46,7 @@ class Configuration
      */
     public function get(string $key)
     {
-        if (isset($this->values[$key])) {
-            return $this->values[$key];
-        }
-
-        if ($this->parentConfig) {
-            return $this->parentConfig->get($key);
-        }
-
-        return null;
+        return (isset($this->values[$key])) ? $this->values[$key] : null;
     }
 
     /**
