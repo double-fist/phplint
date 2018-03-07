@@ -48,7 +48,6 @@ abstract class AbstractRulesPlugin implements RulesPlugin
     public function toArray(): array
     {
         return [
-            'name' => $this->getName(),
             'plugins' => $this->getPlugins(),
             'rules' => $this->getRules(),
         ];

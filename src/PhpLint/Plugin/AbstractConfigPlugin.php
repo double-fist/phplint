@@ -49,7 +49,6 @@ abstract class AbstractConfigPlugin implements ConfigPlugin
     public function toArray(): array
     {
         return [
-            'name' => $this->getName(),
             'extends' => $this->getExtends(),
             'plugins' => $this->getPlugins(),
             'rules' => $this->getRules(),
