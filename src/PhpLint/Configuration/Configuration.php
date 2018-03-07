@@ -5,12 +5,18 @@ namespace PhpLint\Configuration;
 
 class Configuration
 {
+    /**
+     * Valid config keys as supported by this class.
+     */
     const KEY_EXTENDS = 'extends';
     const KEY_PLUGINS = 'plugins';
     const KEY_ROOT = 'root';
     const KEY_RULES = 'rules';
     const KEY_SETTINGS = 'settings';
 
+    /**
+     * Valid rule severity names as supported by this class.
+     */
     const RULE_SEVERITY_OFF = 'off';
     const RULE_SEVERITY_WARNING = 'warning';
     const RULE_SEVERITY_ERROR = 'error';
@@ -50,11 +56,74 @@ class Configuration
     }
 
     /**
+     * @return array
+     */
+    public function getExtends(): array
+    {
+        $extends = $this->get(self::KEY_EXTENDS) ?: [];
+        if (is_string($extends)) {
+            $extends = [$extends];
+        }
+
+        return $extends;
+    }
+
+    /**
+     * @return array
+     */
+    public function getPlugins(): array
+    {
+        return $this->get(self::KEY_PLUGINS) ?: [];
+    }
+
+    /**
      * @return bool
      */
-    public function isRootConfig(): bool
+    public function isRoot(): bool
     {
-        return self::isTrue(self::KEY_ROOT);
+        return $this->get(self::KEY_ROOT) === true;
+    }
+
+    /**
+     * By default this method only returns the names of the rules whose severity is not 'off'. Pass true as first
+     * argument to get all rules.
+     *
+     * @param bool $allRules
+     * @return array
+     */
+    public function getRules(bool $allRules = false): array
+    {
+        return array_filter(
+            $this->get(self::KEY_RULES) ?: [],
+            function ($ruleConfig) {
+                return self::getRuleSeverity($ruleConfig, true) !== self::RULE_SEVERITY_OFF;
+            }
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function getSettings(): array
+    {
+        return $this->get(self::KEY_SETTINGS) ?: [];
+    }
+
+    /**
+     * @param string|array $ruleConfig
+     * @param bool $asName
+     * @return string
+     */
+    public static function getRuleSeverity($ruleConfig, bool $asName = false): string
+    {
+        $severity = (is_string($ruleConfig)) ? $ruleConfig : $ruleConfig[0];
+        if ($asName && !is_string($severity)) {
+            return self::RULE_SEVERITIES[$severity];
+        } elseif (!$asName && is_string($severity)) {
+            return array_search($severity, self::RULE_SEVERITIES);
+        }
+
+        return $severity;
     }
 
     /**
