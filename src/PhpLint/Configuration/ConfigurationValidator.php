@@ -11,7 +11,7 @@ class ConfigurationValidator
     public static function validateConfigData(array $configData)
     {
         foreach ($configData as $key => $value) {
-            self::validateElement($key, $value);
+            self::validateConfigElement($key, $value);
         }
     }
 
