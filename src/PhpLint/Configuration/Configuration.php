@@ -47,6 +47,14 @@ class Configuration
     }
 
     /**
+     * @return Configuration|null
+     */
+    public function getParentConfig()
+    {
+        return $this->parentConfig;
+    }
+
+    /**
      * @param string $key
      * @return mixed
      */
@@ -93,12 +101,17 @@ class Configuration
      */
     public function getRules(bool $allRules = false): array
     {
-        return array_filter(
-            $this->get(self::KEY_RULES) ?: [],
-            function ($ruleConfig) {
-                return self::getRuleSeverity($ruleConfig, true) !== self::RULE_SEVERITY_OFF;
-            }
-        );
+        $rules = $this->get(self::KEY_RULES) ?: [];
+        if (!$allRules) {
+            $rules = array_filter(
+                $rules,
+                function ($ruleConfig) {
+                    return self::getRuleSeverity($ruleConfig, true) !== self::RULE_SEVERITY_OFF;
+                }
+            );
+        }
+
+        return $rules;
     }
 
     /**
@@ -116,7 +129,7 @@ class Configuration
      */
     public static function getRuleSeverity($ruleConfig, bool $asName = false): string
     {
-        $severity = (is_string($ruleConfig)) ? $ruleConfig : $ruleConfig[0];
+        $severity = (is_array($ruleConfig)) ? $ruleConfig[0] : $ruleConfig;
         if ($asName && !is_string($severity)) {
             return self::RULE_SEVERITIES[$severity];
         } elseif (!$asName && is_string($severity)) {
@@ -127,11 +140,58 @@ class Configuration
     }
 
     /**
-     * @param Configuration $config
+     * Merges the values of this config as well as of the given $baseConfig and uses the resulting data to create a
+     * new config instance, which is returned. The values of this config always always take precendence over the
+     * $baseConfig's values.
+     *
+     * @param Configuration $baseConfig
      * @return Configuration
      */
-    public function mergeOntoConfig(Configuration $config): Configuration
+    public function mergeOntoConfig(Configuration $baseConfig): Configuration
     {
-        return new self($this->values, $config);
+        $mergedConfigData = [];
+
+        // Merge the extended configs
+        $mergedConfigData[self::KEY_EXTENDS] = array_values(array_unique(array_merge(
+            $baseConfig->getExtends(),
+            $this->getExtends()
+        )));
+
+        // Merge the required plugins
+        $mergedConfigData[self::KEY_PLUGINS] = array_values(array_unique(array_merge(
+            $baseConfig->getPlugins(),
+            $this->getPlugins()
+        )));
+
+        // Set 'root' if at least of the configs is root
+        $mergedConfigData[self::KEY_ROOT] = $this->isRoot() || $baseConfig->isRoot();
+
+        // Merge the rules by using the base config's rules as base. Any rules only required by this config are added.
+        // If a rule is required in both configs, the severity and rule config found in this config are used. That is,
+        // if the base config specifies a rule config while this config only sets the severtiy of the same rule, the
+        // original config is preserved and only its severity is changed.
+        $mergedRules = $baseConfig->getRules(true);
+        foreach ($this->getRules(true) as $ruleName => $ruleConfig) {
+            if (!isset($mergedRules[$ruleName])) {
+                // Add new rule
+                $mergedRules[$ruleName] = $ruleConfig;
+            } elseif (is_array($mergedRules[$ruleName]) && is_string($ruleConfig)) {
+                // Only change the severity
+                $mergedRules[$ruleName][0] = $ruleConfig;
+            } else {
+                // Overwrite the whole rule config
+                $mergedRules[$ruleName] = $ruleConfig;
+            }
+        }
+        $mergedConfigData[self::KEY_RULES] = $mergedRules;
+
+        // Merge the settings of both configs, using their keys as the only merge level. That is, we don't use a
+        // recursive merge here even though the settings could be many levels deep.
+        $mergedConfigData[self::KEY_SETTINGS] = array_merge(
+            $baseConfig->getSettings(),
+            $this->getSettings()
+        );
+
+        return new self($mergedConfigData, $baseConfig);
     }
 }
