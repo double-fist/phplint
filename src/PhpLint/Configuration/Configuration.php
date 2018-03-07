@@ -37,6 +37,8 @@ class Configuration
     private $parentConfig = null;
 
     /**
+     * Warning: Never create 'real' Configuration instances directly! Always use a ConfigurationLoader.
+     *
      * @param array $values
      * @param Configuration|null $parentConfig
      */
