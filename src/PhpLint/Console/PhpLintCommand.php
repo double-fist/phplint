@@ -10,7 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
 
-use PhpLint\Linter\LintConfiguration;
+use PhpLint\Configuration\Configuration;
 use PhpLint\Linter\Linter;
 use RecursiveCallbackFilterIterator;
 use RecursiveDirectoryIterator;
@@ -53,7 +53,7 @@ class PhpLintCommand extends Command
         }
 
         // TODO: Create config from the CLI options
-        $config = new LintConfiguration([]);
+        $config = new Configuration([]);
 
         // Lint all PHP files found in the path
         $output->writeln('Linting all files at path ' . $lintPath);

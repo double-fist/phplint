@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace PhpLint\Linter;
 
+use PhpLint\Configuration\Configuration;
 use PhpLint\PhpParser\PhpParser;
 
 class Linter
@@ -21,10 +22,10 @@ class Linter
      * Lints all files at the given $filePaths and returns the result.
      *
      * @param string[] $filePaths
-     * @param LintConfiguration $extraConfig
+     * @param Configuration $extraConfig
      * @return LintResult
      */
-    public function lintFilesAtPaths(array $filePaths, LintConfiguration $extraConfig): LintResult
+    public function lintFilesAtPaths(array $filePaths, Configuration $extraConfig): LintResult
     {
         $lintResult = new LintResult();
         $fileTraverser = new FileTraverser($filePaths, $extraConfig);
@@ -40,14 +41,14 @@ class Linter
      * to collect the found violations.
      *
      * @param string $filePath
-     * @param LintConfiguration $config
+     * @param Configuration $config
      * @param LintResult|null $lintResult
      * @return LintResult
      * @throws LintException if the given $filePath does not point to a readable PHP file.
      */
     public function lintFileAtPath(
         string $filePath,
-        LintConfiguration $config,
+        Configuration $config,
         LintResult $lintResult = null
     ): LintResult {
         // Check that path points to a PHP file
@@ -68,14 +69,14 @@ class Linter
      * the found violations.
      *
      * @param string $sourceCode
-     * @param LintConfiguration $config
+     * @param Configuration $config
      * @param LintResult|null $lintResult
      * @param string|null $filePath
      * @return LintResult
      */
     public function lintCode(
         string $sourceCode,
-        LintConfiguration $config,
+        Configuration $config,
         LintResult $lintResult = null,
         string $filePath = null
     ): LintResult {

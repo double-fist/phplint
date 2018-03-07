@@ -4,12 +4,13 @@ declare(strict_types=1);
 namespace PhpLint\Linter;
 
 use ArrayIterator;
+use PhpLint\Configuration\Configuration;
 use PhpLint\Configuration\ConfigurationReader;
 
 class FileTraverser extends ArrayIterator
 {
     /**
-     * @var LintConfiguration|null
+     * @var Configuration|null
      */
     private $extraConfig;
 
@@ -25,9 +26,9 @@ class FileTraverser extends ArrayIterator
 
     /**
      * @param string[] $filePaths
-     * @param LintConfiguration|null $extraConfig
+     * @param Configuration|null $extraConfig
      */
-    public function __construct(array $filePaths, LintConfiguration $extraConfig = null)
+    public function __construct(array $filePaths, Configuration $extraConfig = null)
     {
         parent::__construct($filePaths);
 
@@ -55,7 +56,7 @@ class FileTraverser extends ArrayIterator
      * Returns the effective configuration for the current file path of this iterator or null, if the iterator
      * is invalid.
      *
-     * @return LintConfiguration|null
+     * @return Configuration|null
      */
     public function getCurrentFileConfig()
     {
@@ -76,9 +77,9 @@ class FileTraverser extends ArrayIterator
 
     /**
      * @param string $filePath
-     * @return LintConfiguration
+     * @return Configuration
      */
-    protected function findPathRootConfig(string $filePath): LintConfiguration
+    protected function findPathRootConfig(string $filePath): Configuration
     {
         // Make sure to start in a directory
         $directoryPath = $filePath;
@@ -103,7 +104,7 @@ class FileTraverser extends ArrayIterator
                 $directoryPath,
                 $configValues,
             ];
-            if (isset($configValues[LintConfiguration::KEY_ROOT]) && $configValues[LintConfiguration::KEY_ROOT] === true) {
+            if (isset($configValues[Configuration::KEY_ROOT]) && $configValues[Configuration::KEY_ROOT] === true) {
                 break;
             }
 
@@ -116,10 +117,10 @@ class FileTraverser extends ArrayIterator
         $pathConfig = $cachedRootConfig;
         foreach (array_reverse($directoryConfigData) as list($configPath, $configValues)) {
             if (count($configValues) > 0) {
-                $directoryConfig = new LintConfiguration($configValues, $pathConfig);
+                $directoryConfig = new Configuration($configValues, $pathConfig);
             } else {
                 // No config changes, hence just reuse the previous config (or an empty config as fallback)
-                $directoryConfig = $pathConfig ?: new LintConfiguration([]);
+                $directoryConfig = $pathConfig ?: new Configuration([]);
             }
             $this->directoryConfigs[$configPath] = $directoryConfig;
             $pathConfig = $directoryConfig;
@@ -127,7 +128,7 @@ class FileTraverser extends ArrayIterator
 
         if (!$pathConfig) {
             // No configuration in path
-            $pathConfig = new LintConfiguration([]);
+            $pathConfig = new Configuration([]);
         }
 
         return $pathConfig;
