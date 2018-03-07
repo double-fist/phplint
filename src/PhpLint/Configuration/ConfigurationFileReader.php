@@ -6,7 +6,7 @@ namespace PhpLint\Configuration;
 use FilesystemIterator;
 use Symfony\Component\Yaml\Yaml;
 
-class ConfigurationReader
+class ConfigurationFileReader
 {
     const VALID_CONFIG_FILE_NAMES = [
         '.phplintrc.json',

@@ -5,7 +5,7 @@ namespace PhpLint\Linter;
 
 use ArrayIterator;
 use PhpLint\Configuration\Configuration;
-use PhpLint\Configuration\ConfigurationReader;
+use PhpLint\Configuration\ConfigurationFileReader;
 
 class FileTraverser extends ArrayIterator
 {
@@ -15,9 +15,9 @@ class FileTraverser extends ArrayIterator
     private $extraConfig;
 
     /**
-     * @var ConfigurationReader
+     * @var ConfigurationFileReader
      */
-    private $configReader;
+    private $configFileReader;
 
     /**
      * @var array[]
@@ -33,7 +33,7 @@ class FileTraverser extends ArrayIterator
         parent::__construct($filePaths);
 
         $this->extraConfig = $extraConfig;
-        $this->configReader = new ConfigurationReader();
+        $this->configFileReader = new ConfigurationFileReader();
 
         // Determine the config of the first element of the iterator
         $this->findPathRootConfig($this->current());
@@ -99,7 +99,7 @@ class FileTraverser extends ArrayIterator
             }
 
             // Check the directory for a phplint config
-            $configValues = $this->configReader->readDirectoryConfig($directoryPath);
+            $configValues = $this->configFileReader->readDirectoryConfig($directoryPath);
             $directoryConfigData[]  = [
                 $directoryPath,
                 $configValues,
