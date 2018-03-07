@@ -60,6 +60,12 @@ class ConfigurationLoader
             }
         }
 
-        return new Configuration($configData, $parentConfig);
+        // Merge a new config using the passed data onto the parent config, if possible
+        $loadedConfig = new Configuration($configData, $parentConfig);
+        if ($parentConfig) {
+            $loadedConfig = $loadedConfig->mergeOntoConfig($parentConfig);
+        }
+
+        return $loadedConfig;
     }
 }

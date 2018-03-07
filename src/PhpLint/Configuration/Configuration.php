@@ -123,6 +123,18 @@ class Configuration
     }
 
     /**
+     * @return bool
+     */
+    public function isEmpty(): bool
+    {
+        return !isset($this->values[self::KEY_ROOT])
+            && count($this->getExtends()) === 0
+            && count($this->getPlugins()) === 0
+            && count($this->getRules()) === 0
+            && count($this->getSettings()) === 0;
+    }
+
+    /**
      * @param string|array $ruleConfig
      * @param bool $asName
      * @return string

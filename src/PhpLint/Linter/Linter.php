@@ -4,10 +4,22 @@ declare(strict_types=1);
 namespace PhpLint\Linter;
 
 use PhpLint\Configuration\Configuration;
+use PhpLint\Configuration\ConfigurationLoader;
 use PhpLint\PhpParser\PhpParser;
+use PhpLint\Plugin\PluginLoader;
 
 class Linter
 {
+    /**
+     * @param PluginLoader $pluginLoader
+     */
+    private $pluginLoader;
+
+    /**
+     * @param ConfigurationLoader $configLoader
+     */
+    private $configLoader;
+
     /**
      * @param PhpParser $parser
      */
@@ -28,7 +40,9 @@ class Linter
     public function lintFilesAtPaths(array $filePaths, Configuration $extraConfig): LintResult
     {
         $lintResult = new LintResult();
-        $fileTraverser = new FileTraverser($filePaths, $extraConfig);
+        $this->pluginLoader = new PluginLoader();
+        $this->configLoader = new ConfigurationLoader($this->pluginLoader);
+        $fileTraverser = new FileTraverser($filePaths, $this->configLoader, $extraConfig);
         foreach ($fileTraverser as $filePath) {
             $this->lintFileAtPath($filePath, $fileTraverser->getCurrentFileConfig(), $lintResult);
         }

@@ -6,6 +6,7 @@ namespace PhpLint\Linter;
 use ArrayIterator;
 use PhpLint\Configuration\Configuration;
 use PhpLint\Configuration\ConfigurationFileReader;
+use PhpLint\Configuration\ConfigurationLoader;
 
 class FileTraverser extends ArrayIterator
 {
@@ -13,6 +14,11 @@ class FileTraverser extends ArrayIterator
      * @var Configuration|null
      */
     private $extraConfig;
+
+    /**
+     * @var ConfigurationLoader
+     */
+    private $configLoader;
 
     /**
      * @var ConfigurationFileReader
@@ -26,13 +32,17 @@ class FileTraverser extends ArrayIterator
 
     /**
      * @param string[] $filePaths
+     * @param ConfigurationLoader $configLoader
      * @param Configuration|null $extraConfig
      */
-    public function __construct(array $filePaths, Configuration $extraConfig = null)
+    public function __construct(array $filePaths, ConfigurationLoader $configLoader, Configuration $extraConfig = null)
     {
         parent::__construct($filePaths);
 
-        $this->extraConfig = $extraConfig;
+        if ($extraConfig && !$extraConfig->isEmpty()) {
+            $this->extraConfig = $extraConfig;
+        }
+        $this->configLoader = $configLoader;
         $this->configFileReader = new ConfigurationFileReader();
 
         // Determine the config of the first element of the iterator
@@ -114,21 +124,16 @@ class FileTraverser extends ArrayIterator
 
         // Build a configuration tree, starting with the root configuration, since 'closer' configurations must always
         // be applied last
-        $pathConfig = $cachedRootConfig;
+        $pathConfig = $cachedRootConfig ?: new Configuration([]);
         foreach (array_reverse($directoryConfigData) as list($configPath, $configValues)) {
             if (count($configValues) > 0) {
-                $directoryConfig = new Configuration($configValues, $pathConfig);
+                $directoryConfig = $this->configLoader->loadData($configValues)->mergeOntoConfig($pathConfig);
             } else {
                 // No config changes, hence just reuse the previous config (or an empty config as fallback)
-                $directoryConfig = $pathConfig ?: new Configuration([]);
+                $directoryConfig = $pathConfig;
             }
             $this->directoryConfigs[$configPath] = $directoryConfig;
             $pathConfig = $directoryConfig;
-        }
-
-        if (!$pathConfig) {
-            // No configuration in path
-            $pathConfig = new Configuration([]);
         }
 
         return $pathConfig;
