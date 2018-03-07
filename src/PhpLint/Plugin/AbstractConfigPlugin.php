@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace PhpLint\Plugin;
 
+use PhpLint\Configuration\Configuration;
+
 /**
  * Extends this class in a class named 'Config' in the namespace PhpLint\Plugin\<VENDOR>\<NAME>, e.g.:
  *
@@ -49,9 +51,9 @@ abstract class AbstractConfigPlugin implements ConfigPlugin
     public function toArray(): array
     {
         return [
-            'extends' => $this->getExtends(),
-            'plugins' => $this->getPlugins(),
-            'rules' => $this->getRules(),
+            Configuration::KEY_EXTENDS => $this->getExtends(),
+            Configuration::KEY_PLUGINS => $this->getPlugins(),
+            Configuration::KEY_RULES => $this->getRules(),
         ];
     }
 }

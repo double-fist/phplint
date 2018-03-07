@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace PhpLint\Plugin;
 
+use PhpLint\Configuration\Configuration;
 use PhpLint\Rules\Rule;
 
 /**
@@ -48,8 +49,8 @@ abstract class AbstractRulesPlugin implements RulesPlugin
     public function toArray(): array
     {
         return [
-            'plugins' => $this->getPlugins(),
-            'rules' => $this->getRules(),
+            Configuration::KEY_PLUGINS => $this->getPlugins(),
+            Configuration::KEY_RULES => $this->getRules(),
         ];
     }
 }
