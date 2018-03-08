@@ -39,7 +39,7 @@ class ConfigurationLoader
             throw new ConfigurationException('The configuration data is invalid.', 0, $exception);
         }
 
-        // Load any config plugins the given config extends and build the configuration hierarchy
+        // Recursively load any config plugins the given config extends and build the configuration hierarchy
         $parentConfig = null;
         if (isset($configData[Configuration::KEY_EXTENDS])) {
             $extends = $configData[Configuration::KEY_EXTENDS];
@@ -48,6 +48,7 @@ class ConfigurationLoader
             }
             $extendedConfigPlugins = [];
             foreach ($extends as $configPluginName) {
+                // Load the plugin and attach it to the current config data
                 $plugin = $this->pluginLoader->loadPlugin($configPluginName, PluginLoader::PLUGIN_TYPE_CONFIG);
                 $extendedConfigPlugins[$configPluginName] = $plugin;
                 $pluginConfig = $this->loadData($plugin->toArray());
@@ -56,7 +57,7 @@ class ConfigurationLoader
             $configData[Configuration::KEY_EXTENDS] = $extendedConfigPlugins;
         }
 
-        // Load any rule plugins the config depends on
+        // Recursively load any rule plugins the config depends on and attach them to the current config data
         if (isset($configData[Configuration::KEY_PLUGINS])) {
             $extendedRulesPlugins = [];
             foreach ($configData[Configuration::KEY_PLUGINS] as $rulesPluginName) {
