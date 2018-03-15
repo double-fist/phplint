@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace PhpLint\Configuration;
 
+use PhpLint\Rules\RuleSeverity;
+
 class ConfigurationValidator
 {
     /**
@@ -119,7 +121,7 @@ class ConfigurationValidator
         if (self::isAssocArray($value)) {
             $rulesValid = true;
             foreach ($value as $ruleName => $ruleConfig) {
-                if (self::isRuleSeverity($ruleConfig) || self::isSequentialArray($ruleConfig) && count($ruleConfig) > 0 && self::isRuleSeverity($ruleConfig[0])) {
+                if (RuleSeverity::isRuleSeverity($ruleConfig) || self::isSequentialArray($ruleConfig) && count($ruleConfig) > 0 && RuleSeverity::isRuleSeverity($ruleConfig[0])) {
                     continue;
                 }
 
@@ -136,16 +138,6 @@ class ConfigurationValidator
             ' names and values are their severity (string) or a sequential array containing the severity as first' .
             ' element, followed by other, optional settings.'
         );
-    }
-
-    /**
-     * @param mixed $value
-     * @return bool
-     */
-    protected static function isRuleSeverity($value): bool
-    {
-        return is_string($value) && in_array($value, Configuration::RULE_SEVERITIES)
-            || is_int($value) && in_array($value, array_keys(Configuration::RULE_SEVERITIES));
     }
 
     /**

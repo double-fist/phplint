@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace PhpLint\Test\Configuration;
 
 use PhpLint\Configuration\Configuration;
+use PhpLint\Rules\RuleSeverity;
 use PHPUnit\Framework\TestCase;
 
 class ConfigurationTest extends TestCase
@@ -119,47 +120,47 @@ class ConfigurationTest extends TestCase
     {
         $targetConfig = new Configuration([
             Configuration::KEY_RULES => [
-                'rule-off' => Configuration::RULE_SEVERITY_OFF,
-                'rule-warning' => array_search(Configuration::RULE_SEVERITY_WARNING, Configuration::RULE_SEVERITIES),
+                'rule-off' => RuleSeverity::SEVERITY_OFF,
+                'rule-warning' => array_search(RuleSeverity::SEVERITY_WARNING, RuleSeverity::ALL_SEVERITIES),
                 'rule-error' => [
-                    Configuration::RULE_SEVERITY_OFF,
+                    RuleSeverity::SEVERITY_OFF,
                     'some',
                     'rule',
                     'config',
                 ],
-                'unchanged-rule' => Configuration::RULE_SEVERITY_OFF,
+                'unchanged-rule' => RuleSeverity::SEVERITY_OFF,
             ],
         ]);
         $overridingConfig = new Configuration([
             Configuration::KEY_RULES => [
-                'rule-off' => Configuration::RULE_SEVERITY_ERROR,
+                'rule-off' => RuleSeverity::SEVERITY_ERROR,
                 'rule-warning' => [
-                    Configuration::RULE_SEVERITY_ERROR,
+                    RuleSeverity::SEVERITY_ERROR,
                     1,
                     2,
                 ],
-                'rule-error' => Configuration::RULE_SEVERITY_WARNING,
-                'new-rule' => Configuration::RULE_SEVERITY_ERROR,
+                'rule-error' => RuleSeverity::SEVERITY_WARNING,
+                'new-rule' => RuleSeverity::SEVERITY_ERROR,
             ],
         ]);
         $mergedConfig = $overridingConfig->mergeOntoConfig($targetConfig);
         self::assertEquals($targetConfig, $mergedConfig->getParentConfig());
         self::assertEquals(
             [
-                'rule-off' => Configuration::RULE_SEVERITY_ERROR,
+                'rule-off' => RuleSeverity::SEVERITY_ERROR,
                 'rule-warning' => [
-                    Configuration::RULE_SEVERITY_ERROR,
+                    RuleSeverity::SEVERITY_ERROR,
                     1,
                     2,
                 ],
                 'rule-error' => [
-                    Configuration::RULE_SEVERITY_WARNING,
+                    RuleSeverity::SEVERITY_WARNING,
                     'some',
                     'rule',
                     'config',
                 ],
-                'unchanged-rule' => Configuration::RULE_SEVERITY_OFF,
-                'new-rule' => Configuration::RULE_SEVERITY_ERROR,
+                'unchanged-rule' => RuleSeverity::SEVERITY_OFF,
+                'new-rule' => RuleSeverity::SEVERITY_ERROR,
             ],
             $mergedConfig->getRules(true)
         );

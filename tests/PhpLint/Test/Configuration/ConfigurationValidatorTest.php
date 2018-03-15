@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace PhpLint\Test\Configuration;
 
-use PhpLint\Configuration\Configuration;
 use PhpLint\Configuration\ConfigurationValidator;
+use PhpLint\Rules\RuleSeverity;
 use PHPUnit\Framework\TestCase;
 
 class ConfigurationValidatorTest extends TestCase
@@ -294,9 +294,9 @@ class ConfigurationValidatorTest extends TestCase
     public function testAssociativeArrayWithSeverityStringValuesIsValidRulesValue()
     {
         $value = [
-            'off-rule' => Configuration::RULE_SEVERITY_OFF,
-            'warning-rule' => Configuration::RULE_SEVERITY_WARNING,
-            'error-rule' => Configuration::RULE_SEVERITY_ERROR,
+            'off-rule' => RuleSeverity::SEVERITY_OFF,
+            'warning-rule' => RuleSeverity::SEVERITY_WARNING,
+            'error-rule' => RuleSeverity::SEVERITY_ERROR,
         ];
         ConfigurationValidator::validateRules($value);
         self::assertTrue(true);
@@ -308,9 +308,9 @@ class ConfigurationValidatorTest extends TestCase
     public function testAssociativeArrayWithSeverityNumberValuesIsValidRulesValue()
     {
         $value = [
-            'off-rule' => array_search(Configuration::RULE_SEVERITY_OFF, Configuration::RULE_SEVERITIES),
-            'warning-rule' => array_search(Configuration::RULE_SEVERITY_WARNING, Configuration::RULE_SEVERITIES),
-            'error-rule' => array_search(Configuration::RULE_SEVERITY_ERROR, Configuration::RULE_SEVERITIES),
+            'off-rule' => array_search(RuleSeverity::SEVERITY_OFF, RuleSeverity::ALL_SEVERITIES),
+            'warning-rule' => array_search(RuleSeverity::SEVERITY_WARNING, RuleSeverity::ALL_SEVERITIES),
+            'error-rule' => array_search(RuleSeverity::SEVERITY_ERROR, RuleSeverity::ALL_SEVERITIES),
         ];
         ConfigurationValidator::validateRules($value);
         self::assertTrue(true);
@@ -323,14 +323,14 @@ class ConfigurationValidatorTest extends TestCase
     {
         $value = [
             'off-rule' => [
-                Configuration::RULE_SEVERITY_OFF,
+                RuleSeverity::SEVERITY_OFF,
             ],
             'warning-rule' => [
-                Configuration::RULE_SEVERITY_WARNING,
+                RuleSeverity::SEVERITY_WARNING,
                 'my-value',
             ],
             'error-rule' => [
-                Configuration::RULE_SEVERITY_ERROR,
+                RuleSeverity::SEVERITY_ERROR,
                 10,
                 true,
                 [],
@@ -408,7 +408,7 @@ class ConfigurationValidatorTest extends TestCase
     public function testAssociativeArrayWithUnknownSeverityNumberValueIsInvalidRulesValue()
     {
         $value = [
-            'my-rule' => count(Configuration::RULE_SEVERITIES),
+            'my-rule' => count(RuleSeverity::ALL_SEVERITIES),
         ];
         ConfigurationValidator::validateRules($value);
     }

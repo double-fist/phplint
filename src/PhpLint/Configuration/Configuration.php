@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace PhpLint\Configuration;
 
+use PhpLint\Rules\RuleSeverity;
+
 class Configuration
 {
     /**
@@ -13,18 +15,6 @@ class Configuration
     const KEY_ROOT = 'root';
     const KEY_RULES = 'rules';
     const KEY_SETTINGS = 'settings';
-
-    /**
-     * Valid rule severity names as supported by this class.
-     */
-    const RULE_SEVERITY_OFF = 'off';
-    const RULE_SEVERITY_WARNING = 'warning';
-    const RULE_SEVERITY_ERROR = 'error';
-    const RULE_SEVERITIES = [
-        0 => self::RULE_SEVERITY_OFF,
-        1 => self::RULE_SEVERITY_WARNING,
-        2 => self::RULE_SEVERITY_ERROR,
-    ];
 
     /**
      * @var array
@@ -103,7 +93,7 @@ class Configuration
             $rules = array_filter(
                 $rules,
                 function ($ruleConfig) {
-                    return self::getRuleSeverity($ruleConfig, true) !== self::RULE_SEVERITY_OFF;
+                    return RuleSeverity::getRuleSeverity($ruleConfig, true) !== RuleSeverity::SEVERITY_OFF;
                 }
             );
         }
@@ -129,23 +119,6 @@ class Configuration
             && count($this->getPlugins()) === 0
             && count($this->getRules()) === 0
             && count($this->getSettings()) === 0;
-    }
-
-    /**
-     * @param string|array $ruleConfig
-     * @param bool $asName
-     * @return string
-     */
-    public static function getRuleSeverity($ruleConfig, bool $asName = false): string
-    {
-        $severity = (is_array($ruleConfig)) ? $ruleConfig[0] : $ruleConfig;
-        if ($asName && !is_string($severity)) {
-            return self::RULE_SEVERITIES[$severity];
-        } elseif (!$asName && is_string($severity)) {
-            return array_search($severity, self::RULE_SEVERITIES);
-        }
-
-        return $severity;
     }
 
     /**
