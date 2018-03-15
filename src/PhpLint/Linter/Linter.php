@@ -11,6 +11,11 @@ use PhpLint\Plugin\PluginLoader;
 class Linter
 {
     /**
+     * @param PhpParser $parser
+     */
+    private $parser;
+
+    /**
      * @param PluginLoader $pluginLoader
      */
     private $pluginLoader;
@@ -20,14 +25,11 @@ class Linter
      */
     private $configLoader;
 
-    /**
-     * @param PhpParser $parser
-     */
-    private $parser;
-
     public function __construct()
     {
         $this->parser = new PhpParser();
+        $this->pluginLoader = new PluginLoader();
+        $this->configLoader = new ConfigurationLoader($this->pluginLoader);
     }
 
     /**
@@ -40,8 +42,6 @@ class Linter
     public function lintFilesAtPaths(array $filePaths, Configuration $extraConfig): LintResult
     {
         $lintResult = new LintResult();
-        $this->pluginLoader = new PluginLoader();
-        $this->configLoader = new ConfigurationLoader($this->pluginLoader);
         $fileTraverser = new FileTraverser($filePaths, $this->configLoader, $extraConfig);
         foreach ($fileTraverser as $filePath) {
             $this->lintFileAtPath($filePath, $fileTraverser->getCurrentFileConfig(), $lintResult);
