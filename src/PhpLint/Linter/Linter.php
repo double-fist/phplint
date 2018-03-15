@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace PhpLint\Linter;
 
+use PhpLint\Ast\AstNodeTraverser;
 use PhpLint\Configuration\Configuration;
 use PhpLint\Configuration\ConfigurationLoader;
 use PhpLint\PhpParser\PhpParser;
@@ -102,13 +103,14 @@ class Linter
         $sourceContext = $this->parser->parse($sourceCode, $filePath);
 
         // TODO: Apply any inline configuration found in the source code
+        $fileConfig = $config;
 
-        // TODO: Load and configure rules
-        $rules = [];
-
-        // Run rules on source context
-        $ruleProcessor = new RuleProcessor($rules);
-        $ruleProcessor->runRules($sourceContext, $lintResult);
+        // Run rules on all nodes of the source context
+        $ruleProcessor = new RuleProcessor($fileConfig);
+        $nodeTraverser = new AstNodeTraverser($sourceContext->getAst());
+        foreach ($nodeTraverser as $node) {
+            $ruleProcessor->runRules($node, $sourceContext, $lintResult);
+        }
 
         return $lintResult;
     }
