@@ -40,7 +40,7 @@ class RuleFixAssertion extends AbstractRuleAssertion
 
         $lintResult = new LintResult();
 
-        $this->recursivelyValidateRule($sourceContext->getAst(), $sourceContext, $lintResult);
+        $this->validateRule($sourceContext, $lintResult);
         Assert::assertNotEmpty($lintResult->getViolations(), $assertionMessage);
         $this->assertLintResult($lintResult);
 

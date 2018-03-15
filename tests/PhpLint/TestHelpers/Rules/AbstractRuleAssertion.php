@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace PhpLint\TestHelpers\Rules;
 
 use Exception;
-use PhpLint\Ast\AstNode;
+use PhpLint\Ast\AstNodeTraverser;
 use PhpLint\Ast\SourceContext;
 use PhpLint\Configuration\Configuration;
 use PhpLint\PhpParser\ParserContext;
@@ -86,24 +86,16 @@ abstract class AbstractRuleAssertion
     }
 
     /**
-     * @param AstNode $node
      * @param SourceContext $sourceContext
      * @param LintResult $lintResult
      */
-    protected function recursivelyValidateRule(AstNode $node, SourceContext $sourceContext, LintResult $lintResult)
+    protected function validateRule(SourceContext $sourceContext, LintResult $lintResult)
     {
-        // Validate current node
-        if ($this->getRule()->canValidateNode($node)) {
-            $this->getRule()->validate($node, $sourceContext, Configuration::RULE_SEVERITY_ERROR, $lintResult);
-        }
-
-        // Validate any child nodes
-        $children = $node->getChildren();
-        if (!$children) {
-            return;
-        }
-        foreach ($children as $child) {
-            $this->recursivelyValidateRule($child, $sourceContext, $lintResult);
+        $nodeTraverser = new AstNodeTraverser($sourceContext->getAst());
+        foreach ($nodeTraverser as $node) {
+            if ($this->getRule()->canValidateNode($node)) {
+                $this->getRule()->validate($node, $sourceContext, Configuration::RULE_SEVERITY_ERROR, $lintResult);
+            }
         }
     }
 
