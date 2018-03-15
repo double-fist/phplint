@@ -3,38 +3,44 @@ declare(strict_types=1);
 
 namespace PhpLint\Linter;
 
+use PhpLint\Ast\AstNode;
 use PhpLint\Ast\SourceContext;
-use PhpLint\Rules\Rule;
+use PhpLint\Configuration\Configuration;
+use PhpLint\Rules\RuleLoader;
 
 class RuleProcessor
 {
     /**
-     * @var Rule[]
+     * @var Configuration
      */
-    private $rules;
+    private $config;
 
     /**
-     * @param Rule[] $rules
+     * @var RuleLoader
      */
-    public function __construct(array $rules)
+    private $ruleLoader;
+
+    /**
+     * @param Configuration $config
+     */
+    public function __construct(Configuration $config)
     {
-        $this->rules = $rules;
+        $this->config = $config;
+        $this->ruleLoader = new RuleLoader($config);
     }
 
     /**
-     * @return Rule[]
-     */
-    public function getRules(): array
-    {
-        return $this->rules;
-    }
-
-    /**
+     * @param AstNode $node
      * @param SourceContext $sourceContext
-     * @param LintResult $result
+     * @param LintResult $lintResult
      */
-    public function runRules(SourceContext $sourceContext, LintResult $result)
+    public function runRules(AstNode $node, SourceContext $sourceContext, LintResult $lintResult)
     {
-        // TODO
+        foreach ($this->config->getRules() as $ruleName => $ruleConfig) {
+            $rule = $this->ruleLoader->loadRule($ruleName);
+            if ($rule->canValidateNode($node)) {
+                $rule->validate($node, $sourceContext, $ruleConfig, $lintResult);
+            }
+        }
     }
 }
