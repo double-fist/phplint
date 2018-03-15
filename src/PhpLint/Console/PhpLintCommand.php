@@ -6,12 +6,14 @@ namespace PhpLint\Console;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
 
 use PhpLint\Configuration\Configuration;
 use PhpLint\Linter\Linter;
+use PhpLint\Linter\LintResult;
 use RecursiveCallbackFilterIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -19,6 +21,7 @@ use RecursiveIteratorIterator;
 class PhpLintCommand extends Command
 {
     const ARG_NAME_LINT_PATH = 'lint-path';
+    const OPTION_NAME_ERRORS_ONLY = 'errors-only';
 
     /**
      * @inheritdoc
@@ -32,6 +35,12 @@ class PhpLintCommand extends Command
                 InputArgument::OPTIONAL,
                 'The path whose files shall be linted',
                 '.'
+            ),
+            new InputOption(
+                self::OPTION_NAME_ERRORS_ONLY,
+                null,
+                InputOption::VALUE_NONE,
+                'Report errors only'
             ),
         ]);
         $this->setDescription('Lints the file(s) at the specified path');
@@ -55,15 +64,19 @@ class PhpLintCommand extends Command
         // TODO: Create config from the CLI options
         $config = new Configuration([]);
 
+        // Prepare lint result, respecting the passed options
+        $errorsOnly = $input->getOption(self::OPTION_NAME_ERRORS_ONLY);
+        $lintResult = new LintResult($errorsOnly);
+
         // Lint all PHP files found in the path
         $output->writeln('Linting all files at path ' . $lintPath);
         $linter = new Linter();
-        $result = $linter->lintFilesAtPaths($phpFilePaths, $config);
+        $lintResult = $linter->lintFilesAtPaths($phpFilePaths, $config, $lintResult);
         $output->writeln('Done!');
 
         // TODO: Format the result
-        if (count($result) > 0) {
-            $output->writeln(sprintf('Found %d violations!', count($result)));
+        if (count($lintResult) > 0) {
+            $output->writeln(sprintf('Found %d violations!', count($lintResult)));
         } else {
             $output->writeln('No violations found.');
         }

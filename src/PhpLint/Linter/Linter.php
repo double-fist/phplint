@@ -38,11 +38,14 @@ class Linter
      *
      * @param string[] $filePaths
      * @param Configuration $extraConfig
+     * @param LintResult|null $lintResult,
      * @return LintResult
      */
-    public function lintFilesAtPaths(array $filePaths, Configuration $extraConfig): LintResult
-    {
-        $lintResult = new LintResult();
+    public function lintFilesAtPaths(
+        array $filePaths,
+        Configuration $extraConfig,
+        LintResult $lintResult = null
+    ): LintResult {
         $fileTraverser = new FileTraverser($filePaths, $this->configLoader, $extraConfig);
         foreach ($fileTraverser as $filePath) {
             $this->lintFileAtPath($filePath, $fileTraverser->getCurrentFileConfig(), $lintResult);

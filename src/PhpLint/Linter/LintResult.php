@@ -10,9 +10,22 @@ use PhpLint\Rules\RuleSeverity;
 class LintResult implements Countable
 {
     /**
+     * @var bool
+     */
+    private $errorsOnly;
+
+    /**
      * @var RuleViolation[]
      */
     protected $violations = [];
+
+    /**
+     * @param bool $errorsOnly
+     */
+    public function __construct(bool $errorsOnly = false)
+    {
+        $this->errorsOnly = $errorsOnly;
+    }
 
     /**
      * @inheritdoc
@@ -41,6 +54,11 @@ class LintResult implements Countable
     {
         if (!RuleSeverity::isRuleSeverity($severity)) {
             throw LintException::invalidRuleSeverityReported($ruleName, $severity);
+        }
+
+        $errorSeverityCode = array_search(RuleSeverity::SEVERITY_ERROR, RuleSeverity::ALL_SEVERITIES);
+        if ($this->errorsOnly && RuleSeverity::getRuleSeverity($severity) < $errorSeverityCode) {
+            return;
         }
 
         $this->violations[] = new RuleViolation(
