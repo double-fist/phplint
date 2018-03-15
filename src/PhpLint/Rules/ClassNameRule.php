@@ -58,7 +58,12 @@ class ClassNameRule extends AbstractRule
 
         $classNamePattern = '/^[A-Z][A-Za-z]*$/';
         if (preg_match($classNamePattern, $className->name) !== 1) {
-            $result->reportViolation($node, self::MESSAGE_ID_CLASS_NAME_NOT_IN_STUDLY_CAPS);
+            $result->reportViolation(
+                $this->getName(),
+                RuleSeverity::getRuleSeverity($ruleConfig),
+                self::MESSAGE_ID_CLASS_NAME_NOT_IN_STUDLY_CAPS,
+                $node
+            );
         }
     }
 }

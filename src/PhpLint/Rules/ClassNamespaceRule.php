@@ -50,7 +50,12 @@ class ClassNamespaceRule extends AbstractRule
     {
         $parentNode = $node->getParent();
         if (!$parentNode || $parentNode->getType() !== AstNodeType::NAMESPACE) {
-            $result->reportViolation($node, self::MESSAGE_ID_CLASS_NOT_NAMESPACED);
+            $result->reportViolation(
+                $this->getName(),
+                RuleSeverity::getRuleSeverity($ruleConfig),
+                self::MESSAGE_ID_CLASS_NOT_NAMESPACED,
+                $node
+            );
         }
     }
 }

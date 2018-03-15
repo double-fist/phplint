@@ -5,6 +5,7 @@ namespace PhpLint\Linter;
 
 use Countable;
 use PhpLint\Ast\AstNode;
+use PhpLint\Rules\RuleSeverity;
 
 class LintResult implements Countable
 {
@@ -30,11 +31,23 @@ class LintResult implements Countable
     }
 
     /**
-     * @param AstNode $node
+     * @param string $ruleName
+     * @param string|int $severity
      * @param string $messageId
+     * @param AstNode $node
+     * @throws LintException if the passed $severity is invalid.
      */
-    public function reportViolation(AstNode $node, string $messageId)
+    public function reportViolation(string $ruleName, $severity, string $messageId, AstNode $node)
     {
-        $this->violations[] = new RuleViolation($node, $messageId);
+        if (!RuleSeverity::isRuleSeverity($severity)) {
+            throw LintException::invalidRuleSeverityReported($ruleName, $severity);
+        }
+
+        $this->violations[] = new RuleViolation(
+            $ruleName,
+            RuleSeverity::getRuleSeverity($severity, true),
+            $messageId,
+            $node
+        );
     }
 }

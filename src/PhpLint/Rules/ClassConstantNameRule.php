@@ -86,7 +86,12 @@ class ClassConstantNameRule extends AbstractRule
 
         $constNamePattern = '/^_?([A-Z]+_?)+$/';
         if (preg_match($constNamePattern, $constName->name) !== 1) {
-            $result->reportViolation($node, self::MESSAGE_ID_CLASS_CONSTANT_NAME_NOT_ALL_UPPER_CASE);
+            $result->reportViolation(
+                $this->getName(),
+                RuleSeverity::getRuleSeverity($ruleConfig),
+                self::MESSAGE_ID_CLASS_CONSTANT_NAME_NOT_ALL_UPPER_CASE,
+                $node
+            );
         }
     }
 }

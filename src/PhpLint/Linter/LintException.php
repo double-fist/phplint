@@ -30,4 +30,18 @@ class LintException extends Exception
             $path
         ));
     }
+
+    /**
+     * @param string $ruleName
+     * @param mixed $severity
+     * @return LintException
+     */
+    public static function invalidRuleSeverityReported(string $ruleName, $severity): LintException
+    {
+        return new self(sprintf(
+            'The violation reported by rule "%s" used an invalid severity "%s".',
+            $ruleName,
+            $severity
+        ));
+    }
 }

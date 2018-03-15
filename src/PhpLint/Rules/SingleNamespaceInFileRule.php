@@ -66,7 +66,12 @@ class SingleNamespaceInFileRule extends AbstractRule
             }
 
             if ($sibling !== $node) {
-                $result->reportViolation($node, self::MESSAGE_ID_MULTIPLE_NAMESPACE_DECLARATIONS_IN_FILE);
+                $result->reportViolation(
+                    $this->getName(),
+                    RuleSeverity::getRuleSeverity($ruleConfig),
+                    self::MESSAGE_ID_MULTIPLE_NAMESPACE_DECLARATIONS_IN_FILE,
+                    $node
+                );
             }
 
             break;

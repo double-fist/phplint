@@ -15,6 +15,14 @@ abstract class AbstractRule implements Rule
     protected $description;
 
     /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->getDescription()->getIdentifier();
+    }
+
+    /**
      * @inheritdoc
      */
     public function getDescription(): RuleDescription

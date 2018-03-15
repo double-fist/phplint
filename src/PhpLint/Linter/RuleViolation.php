@@ -8,38 +8,68 @@ use PhpLint\Ast\AstNode;
 class RuleViolation
 {
     /**
-     * @var AstNode $node
+     * @var string
      */
-    protected $node;
+    protected $ruleName;
 
     /**
-     * @var string $messageId
+     * @var string
+     */
+    protected $severity;
+
+    /**
+     * @var string
      */
     protected $messageId;
 
     /**
-     * @param AstNode $node
+     * @var AstNode
+     */
+    protected $node;
+
+    /**
+     * @param string $ruleName
+     * @param string $severity
      * @param string $messageId
+     * @param AstNode $node
      */
-    public function __construct(AstNode $node, string $messageId)
+    public function __construct(string $ruleName, string $severity, string $messageId, AstNode $node)
     {
-        $this->node = $node;
+        $this->ruleName = $ruleName;
+        $this->severity = $severity;
         $this->messageId = $messageId;
+        $this->node = $node;
     }
 
     /**
-     * @return AstNode $node
+     * @return string
      */
-    public function getNode(): AstNode
+    public function getRuleName(): string
     {
-        return $this->node;
+        return $this->ruleName;
     }
 
     /**
-     * @return string $messageId
+     * @return string
+     */
+    public function getSeverity(): string
+    {
+        return $this->severity;
+    }
+
+    /**
+     * @return string
      */
     public function getMessageId(): string
     {
         return $this->messageId;
+    }
+
+    /**
+     * @return AstNode
+     */
+    public function getNode(): AstNode
+    {
+        return $this->node;
     }
 }

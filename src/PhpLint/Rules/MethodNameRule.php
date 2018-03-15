@@ -86,7 +86,12 @@ class MethodNameRule extends AbstractRule
 
         $methodNamePattern = '/^[a-z][A-Za-z]*$/';
         if (preg_match($methodNamePattern, $methodName->name) !== 1) {
-            $result->reportViolation($node, self::MESSAGE_ID_METHOD_NAME_NOT_IN_CAMEL_CASE);
+            $result->reportViolation(
+                $this->getName(),
+                RuleSeverity::getRuleSeverity($ruleConfig),
+                self::MESSAGE_ID_METHOD_NAME_NOT_IN_CAMEL_CASE,
+                $node
+            );
         }
     }
 }
