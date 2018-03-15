@@ -90,8 +90,8 @@ class Configuration
     }
 
     /**
-     * By default this method only returns the names of the rules whose severity is not 'off'. Pass true as first
-     * argument to get all rules.
+     * By default this method only returns the rules whose severity is not 'off'. Pass true as first argument to get
+     * all rules.
      *
      * @param bool $allRules
      * @return array
