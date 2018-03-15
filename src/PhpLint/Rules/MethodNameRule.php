@@ -5,7 +5,7 @@ namespace PhpLint\Rules;
 
 use PhpLint\Ast\AstNode;
 use PhpLint\Ast\AstNodeType;
-use PhpLint\Linter\LintContext;
+use PhpLint\Ast\SourceContext;
 use PhpLint\Linter\LintResult;
 
 class MethodNameRule extends AbstractRule
@@ -77,7 +77,7 @@ class MethodNameRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    public function validate(AstNode $node, LintContext $context, LintResult $result)
+    public function validate(AstNode $node, SourceContext $context, $ruleConfig, LintResult $result)
     {
         $methodName = $node->get('name');
         if (!$methodName || mb_strlen($methodName->name) === 0) {

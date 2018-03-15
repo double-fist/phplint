@@ -5,7 +5,7 @@ namespace PhpLint\Rules;
 
 use PhpLint\Ast\AstNode;
 use PhpLint\Ast\AstNodeType;
-use PhpLint\Linter\LintContext;
+use PhpLint\Ast\SourceContext;
 use PhpLint\Linter\LintResult;
 
 class ClassConstantNameRule extends AbstractRule
@@ -77,7 +77,7 @@ class ClassConstantNameRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    public function validate(AstNode $node, LintContext $context, LintResult $result)
+    public function validate(AstNode $node, SourceContext $context, $ruleConfig, LintResult $result)
     {
         $constName = $node->get('name');
         if (!$constName || mb_strlen($constName->name) === 0) {

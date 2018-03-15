@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace PhpLint\Rules;
 
 use PhpLint\Ast\AstNode;
-use PhpLint\Linter\LintContext;
+use PhpLint\Ast\SourceContext;
 use PhpLint\Linter\LintResult;
 
 interface Rule
@@ -32,8 +32,9 @@ interface Rule
 
     /**
      * @param AstNode $node
-     * @param LintContext $context
+     * @param SourceContext $context
+     * @param string|array $ruleConfig
      * @param LintResult $result
      */
-    public function validate(AstNode $node, LintContext $context, LintResult $result);
+    public function validate(AstNode $node, SourceContext $context, $ruleConfig, LintResult $result);
 }

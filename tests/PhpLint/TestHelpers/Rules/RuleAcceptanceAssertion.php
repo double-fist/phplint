@@ -6,7 +6,6 @@ namespace PhpLint\TestHelpers\Rules;
 use Exception;
 use PhpLint\Ast\AstNode;
 use PhpLint\PhpParser\ParserContext;
-use PhpLint\Linter\LintContext;
 use PhpLint\Linter\LintResult;
 use PHPUnit\Framework\Assert;
 
@@ -23,10 +22,9 @@ class RuleAcceptanceAssertion extends AbstractRuleAssertion
             $this->getTestCode()
         );
 
-        $lintContext = new LintContext();
         $lintResult = new LintResult();
 
-        $this->recursivelyValidateRule($sourceContext->getAst(), $lintContext, $lintResult);
+        $this->recursivelyValidateRule($sourceContext->getAst(), $sourceContext, $lintResult);
         Assert::assertEmpty($lintResult->getViolations(), $assertionMessage);
     }
 

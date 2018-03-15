@@ -5,7 +5,7 @@ namespace PhpLint\Rules;
 
 use PhpLint\Ast\AstNode;
 use PhpLint\Ast\AstNodeType;
-use PhpLint\Linter\LintContext;
+use PhpLint\Ast\SourceContext;
 use PhpLint\Linter\LintResult;
 
 class ClassNamespaceRule extends AbstractRule
@@ -46,7 +46,7 @@ class ClassNamespaceRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    public function validate(AstNode $node, LintContext $context, LintResult $result)
+    public function validate(AstNode $node, SourceContext $context, $ruleConfig, LintResult $result)
     {
         $parentNode = $node->getParent();
         if (!$parentNode || $parentNode->getType() !== AstNodeType::NAMESPACE) {

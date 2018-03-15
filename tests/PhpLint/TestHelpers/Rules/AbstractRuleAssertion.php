@@ -5,8 +5,8 @@ namespace PhpLint\TestHelpers\Rules;
 
 use Exception;
 use PhpLint\Ast\AstNode;
+use PhpLint\Ast\SourceContext;
 use PhpLint\PhpParser\ParserContext;
-use PhpLint\Linter\LintContext;
 use PhpLint\Linter\LintResult;
 use PhpLint\Linter\RuleViolation;
 use PhpLint\PhpParser\PhpParser;
@@ -86,14 +86,14 @@ abstract class AbstractRuleAssertion
 
     /**
      * @param AstNode $node
-     * @param LintContext $lintContext
+     * @param SourceContext $sourceContext
      * @param LintResult $lintResult
      */
-    protected function recursivelyValidateRule(AstNode $node, LintContext $lintContext, LintResult $lintResult)
+    protected function recursivelyValidateRule(AstNode $node, SourceContext $sourceContext, LintResult $lintResult)
     {
         // Validate current node
         if ($this->getRule()->canValidateNode($node)) {
-            $this->getRule()->validate($node, $lintContext, $lintResult);
+            $this->getRule()->validate($node, $sourceContext, [], $lintResult);
         }
 
         // Validate any child nodes
@@ -102,7 +102,7 @@ abstract class AbstractRuleAssertion
             return;
         }
         foreach ($children as $child) {
-            $this->recursivelyValidateRule($child, $lintContext, $lintResult);
+            $this->recursivelyValidateRule($child, $sourceContext, $lintResult);
         }
     }
 

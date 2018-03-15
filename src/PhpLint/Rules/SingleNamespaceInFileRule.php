@@ -5,7 +5,7 @@ namespace PhpLint\Rules;
 
 use PhpLint\Ast\AstNode;
 use PhpLint\Ast\AstNodeType;
-use PhpLint\Linter\LintContext;
+use PhpLint\Ast\SourceContext;
 use PhpLint\Linter\LintResult;
 
 class SingleNamespaceInFileRule extends AbstractRule
@@ -56,7 +56,7 @@ class SingleNamespaceInFileRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    public function validate(AstNode $node, LintContext $context, LintResult $result)
+    public function validate(AstNode $node, SourceContext $context, $ruleConfig, LintResult $result)
     {
         // Check the AST for other namespace declarations before the given node
         $siblings =  ($node->getParent()) ? $node->getParent()->getChildren() : [];
