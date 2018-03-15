@@ -5,8 +5,15 @@ namespace PhpLint\Ast;
 
 interface AstNode
 {
+    /**
+     * @return string
+     */
     public function getType(): string;
 
+    /**
+     * @param strign $key
+     * @return mixed
+     */
     public function get(string $key);
 
     /**
@@ -19,5 +26,8 @@ interface AstNode
      */
     public function getParent();
 
+    /**
+     * @return AstNode[]
+     */
     public function getChildren(): array;
 }
