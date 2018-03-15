@@ -26,7 +26,13 @@ interface RulesPlugin extends Plugin
 
     /**
      * @param string $ruleName
+     * @return bool
+     */
+    public function hasRule(string $ruleName): bool;
+
+    /**
+     * @param string $ruleName
      * @return Rule
      */
-    public function createRule(string $ruleName): Rule;
+    public function loadRule(string $ruleName): Rule;
 }
