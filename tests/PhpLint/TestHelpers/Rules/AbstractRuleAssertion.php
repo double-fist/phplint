@@ -6,6 +6,7 @@ namespace PhpLint\TestHelpers\Rules;
 use Exception;
 use PhpLint\Ast\AstNode;
 use PhpLint\Ast\SourceContext;
+use PhpLint\Configuration\Configuration;
 use PhpLint\PhpParser\ParserContext;
 use PhpLint\Linter\LintResult;
 use PhpLint\Linter\RuleViolation;
@@ -93,7 +94,7 @@ abstract class AbstractRuleAssertion
     {
         // Validate current node
         if ($this->getRule()->canValidateNode($node)) {
-            $this->getRule()->validate($node, $sourceContext, [], $lintResult);
+            $this->getRule()->validate($node, $sourceContext, Configuration::RULE_SEVERITY_ERROR, $lintResult);
         }
 
         // Validate any child nodes
