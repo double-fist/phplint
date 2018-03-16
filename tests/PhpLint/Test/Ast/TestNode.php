@@ -3,10 +3,12 @@ declare(strict_types=1);
 
 namespace PhpLint\Test\Ast;
 
-use PhpLint\Ast\AstNode;
+use PhpLint\Ast\AstNodeTraverser;
 use PhpLint\Configuration\ConfigurationValidator;
+use PhpParser\Node;
+use PhpParser\NodeAbstract;
 
-class TestAstNode implements AstNode
+class TestNode extends NodeAbstract
 {
     /**
      * @var string
@@ -14,21 +16,16 @@ class TestAstNode implements AstNode
     private $id;
 
     /**
-     * @var AstNode|null
+     * @var Node[]
      */
-    private $parent = null;
-
-    /**
-     * @var AstNode[]
-     */
-    private $children;
+    public $children;
 
     /**
      * @param string $rootId
      * @param array $children
-     * @return TestAstNode
+     * @return TestNode
      */
-    public static function createFromArrayDescription(string $rootId, array $children): TestAstNode
+    public static function createFromArrayDescription(string $rootId, array $children): TestNode
     {
         $childrenIds = (ConfigurationValidator::isAssocArray($children)) ? array_keys($children) : $children;
         $childrenDescriptions = (ConfigurationValidator::isAssocArray($children)) ? $children : array_fill_keys($childrenIds, []);
@@ -40,20 +37,21 @@ class TestAstNode implements AstNode
             $childrenIds
         );
 
-        return new self($rootId, $children);
+        $root = new self($rootId, $children);
+        AstNodeTraverser::createParentBackLinks($root);
+
+        return $root;
     }
 
     /**
      * @param string $id
-     * @param AstNode[] $children
+     * @param Node[] $children
      */
     public function __construct(string $id, array $children = [])
     {
+        parent::__construct([]);
         $this->id = $id;
         $this->children = $children;
-        foreach ($this->children as $child) {
-            $child->setParent($this);
-        }
     }
 
     /**
@@ -67,33 +65,9 @@ class TestAstNode implements AstNode
     /**
      * @inheritdoc
      */
-    public function get(string $key)
+    public function getSubNodeNames(): array
     {
-        return null;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setParent(AstNode $parent)
-    {
-        $this->parent = $parent;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getParent()
-    {
-        return $this->parent;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getChildren(): array
-    {
-        return $this->children;
+        return ['children'];
     }
 
     /**
@@ -110,6 +84,6 @@ class TestAstNode implements AstNode
      */
     public function equals($otherNode): bool
     {
-        return ($otherNode instanceof TestAstNode) && $otherNode->getId() === $this->id;
+        return ($otherNode instanceof TestNode) && $otherNode->getId() === $this->id;
     }
 }

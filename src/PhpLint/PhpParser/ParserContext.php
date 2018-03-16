@@ -3,10 +3,11 @@ declare(strict_types=1);
 
 namespace PhpLint\PhpParser;
 
-use PhpLint\Ast\AstNode;
+use PhpLint\Ast\Node\SourceRoot;
 use PhpLint\Ast\SourceContext;
 use PhpLint\Ast\SourceRange;
 use PhpLint\Ast\Token;
+use PhpParser\Node;
 
 class ParserContext implements SourceContext
 {
@@ -22,12 +23,12 @@ class ParserContext implements SourceContext
 
     /**
      * SourceContext constructor.
-     * @param AstNode $ast
+     * @param SourceRoot $ast
      * @param array $tokens
      * @param string $content
      * @param null|string $path
      */
-    public function __construct(AstNode $ast, array $tokens, string $content, string $path = null)
+    public function __construct(SourceRoot $ast, array $tokens, string $content, string $path = null)
     {
         $this->path = $path;
         $this->content = $content;
@@ -36,15 +37,15 @@ class ParserContext implements SourceContext
     }
 
     /**
-     * @return null|string
+     * @inheritdoc
      */
-    public function getPath(): string
+    public function getPath()
     {
         return $this->path;
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getContent(): string
     {
@@ -52,32 +53,22 @@ class ParserContext implements SourceContext
     }
 
     /**
-     * @return AstNode
+     * @inheritdoc
      */
-    public function getAst(): AstNode
+    public function getAst(): SourceRoot
     {
         return $this->ast;
     }
 
-    public function getSourceRangeOfNode(AstNode $node): SourceRange
+    public function getSourceRangeOfNode(Node $node): SourceRange
     {
-        if (!$node instanceof ParserAstNode) {
-            throw new \InvalidArgumentException(
-                'Argument of type %s expected, got %s instead.',
-                ParserAstNode::class,
-                get_class($node)
-            );
-        }
-
-        $wrappedNode = $node->getWrappedNode();
-
-        if ($wrappedNode === null) {
+        if ($node === $this->ast) {
             return $this->getSourceRangeOfTokens(0, count($this->tokens) - 1);
         }
 
         return $this->getSourceRangeOfTokens(
-            $wrappedNode->getStartTokenPos(),
-            $wrappedNode->getEndTokenPos()
+            $node->getStartTokenPos(),
+            $node->getEndTokenPos()
         );
     }
 

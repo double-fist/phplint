@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace PhpLint\Rules;
 
-use PhpLint\Ast\AstNode;
-use PhpLint\Ast\AstNodeType;
 use PhpLint\Ast\SourceContext;
 use PhpLint\Linter\LintResult;
+use PhpParser\Node;
+use PhpParser\Node\Stmt\ClassConst;
 
 class ClassConstantNameRule extends AbstractRule
 {
@@ -70,22 +70,22 @@ class ClassConstantNameRule extends AbstractRule
     public function getTypes(): array
     {
         return [
-            AstNodeType::CLASS_CONST,
+            ClassConst::class,
         ];
     }
 
     /**
      * @inheritdoc
      */
-    public function validate(AstNode $node, SourceContext $context, $ruleConfig, LintResult $result)
+    public function validate(Node $node, SourceContext $context, $ruleConfig, LintResult $result)
     {
-        $constName = $node->get('name');
-        if (!$constName || mb_strlen($constName->name) === 0) {
+        $const = $node->consts[0];
+        if (empty($const->name)) {
             return;
         }
 
         $constNamePattern = '/^_?([A-Z]+_?)+$/';
-        if (preg_match($constNamePattern, $constName->name) !== 1) {
+        if (preg_match($constNamePattern, $const->name->name) !== 1) {
             $result->reportViolation(
                 $this->getName(),
                 RuleSeverity::getRuleSeverity($ruleConfig),

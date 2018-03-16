@@ -4,16 +4,19 @@ declare(strict_types=1);
 namespace PhpLint\Ast;
 
 use Iterator;
+use PhpParser\Node;
 
 class AstNodeTraverser implements Iterator
 {
+    const PARENT_ATTRIBUTE_NAME = 'phplint_parent';
+
     /**
-     * @var AstNode
+     * @var Node
      */
     private $rootNode;
 
     /**
-     * @var AstNode
+     * @var Node
      */
     private $currentNode;
 
@@ -23,10 +26,83 @@ class AstNodeTraverser implements Iterator
     private $counter = 0;
 
     /**
-     * @param AstNode $rootNode
+     * @param Node $node
+     * @return Node|null
      */
-    public function __construct(AstNode $rootNode)
+    public static function getParent(Node $node)
     {
+        return $node->getAttribute(self::PARENT_ATTRIBUTE_NAME);
+    }
+
+    /**
+     * @param Node $node
+     * @return Node[]
+     */
+    public static function getChildren(Node $node): array
+    {
+        $children = [];
+        foreach ($node->getSubNodeNames() as $subNodeName) {
+            $subNode = $node->$subNodeName;
+            if (is_array($subNode)) {
+                // Keep only real node children
+                $children = array_merge($children, array_values(array_filter(
+                    $subNode,
+                    function ($node) {
+                        return $node instanceof Node;
+                    }
+                )));
+            } elseif ($subNode instanceof Node) {
+                $children[] = $subNode;
+            }
+        }
+
+        return $children;
+    }
+
+    /**
+     * @param Node $node
+     * @param bool $includeGivenNode
+     * @return Node[]
+     */
+    public static function getSiblings(Node $node, bool $includeGivenNode = false): array
+    {
+        $parent = self::getParent($node);
+        if (!$parent) {
+            return [];
+        }
+
+        $siblings = self::getChildren($parent);
+        if ($includeGivenNode) {
+            return $siblings;
+        }
+
+        return array_values(array_filter(
+            $siblings,
+            function (Node $sibling) use ($node) {
+                return $sibling !== $node;
+            }
+        ));
+    }
+
+    /**
+     * @param Node $node
+     */
+    public static function createParentBackLinks(Node $node)
+    {
+        foreach (self::getChildren($node) as $child) {
+            if ($child instanceof Node) {
+                $child->setAttribute(self::PARENT_ATTRIBUTE_NAME, $node);
+                self::createParentBackLinks($child);
+            }
+        }
+    }
+
+    /**
+     * @param Node $rootNode
+     */
+    public function __construct(Node $rootNode)
+    {
+        self::createParentBackLinks($rootNode);
         $this->rootNode = $rootNode;
         $this->currentNode = $rootNode;
     }
@@ -74,23 +150,24 @@ class AstNodeTraverser implements Iterator
     }
 
     /**
-     * @param AstNode $node
-     * @return AstNode|null
+     * @param Node $node
+     * @return Node|null
      */
-    protected static function findNextNode(AstNode $node, $isTraversingDown = true)
+    protected static function findNextNode(Node $node, $isTraversingDown = true)
     {
         // Check for children first (depth first), if we're traversing the tree downwards
-        if ($isTraversingDown && count($node->getChildren()) > 0) {
-            return $node->getChildren()[0];
+        if ($isTraversingDown && count(self::getChildren($node)) > 0) {
+            return self::getChildren($node)[0];
         }
 
-        if (!$node->getParent()) {
+        $parent = self::getParent($node);
+        if (!$parent) {
             // No nodes left
             return null;
         }
 
         // Check for siblings
-        $siblings = $node->getParent()->getChildren();
+        $siblings = self::getSiblings($node, true);
         $childIndex = array_search($node, $siblings);
         $nextSiblingIndex = $childIndex + 1;
         if ($nextSiblingIndex < count($siblings)) {
@@ -98,6 +175,6 @@ class AstNodeTraverser implements Iterator
         }
 
         // Current node is last or only sibling, hence traverse the tree up and keep searching
-        return self::findNextNode($node->getParent(), false);
+        return self::findNextNode($parent, false);
     }
 }

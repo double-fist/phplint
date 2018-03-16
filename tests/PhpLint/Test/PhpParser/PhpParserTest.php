@@ -4,8 +4,7 @@ declare(strict_types=1);
 namespace PhpLint\Test\PhpParser;
 
 use PhpLint\AbstractParser;
-use PhpLint\Ast\AstNode;
-use PhpLint\Ast\AstNodeType;
+use PhpLint\Ast\Node\SourceRoot;
 use PhpLint\PhpParser\ParserContext;
 use PhpLint\PhpParser\PhpParser;
 use PhpLint\TestHelpers\AstTestCase;
@@ -51,99 +50,6 @@ PROGRAM;
         $sourceContext = $this->parser->parse($program, 'test.php');
 
         $sourceRoot = $sourceContext->getAst();
-        $this->assertNodeType(AstNodeType::SOURCE_ROOT, $sourceRoot);
-    }
-
-    public function testParsingANamespaceDeclaration()
-    {
-        $program = <<<PROGRAM
-<?php
-namespace PhpLint\Test\Ast;
-PROGRAM;
-
-        $sourceContext = $this->parser->parse($program, 'test.php');
-
-        /** @var AstNode[] $sourceContents */
-        $sourceContents = $sourceContext->getAst()->get('contents');
-        $this->assertCount(1, $sourceContents);
-
-        /** @var AstNode $namespaceNode */
-        $namespaceNode = $sourceContents[0];
-        $this->assertNodeType(AstNodeType::NAMESPACE, $namespaceNode);
-
-        /** @var AstNode $nameNode */
-        $nameNode = $namespaceNode->get('name');
-        $this->assertNodeType(AstNodeType::NAME, $nameNode);
-        $this->assertEquals(['PhpLint', 'Test', 'Ast'], $nameNode->get('parts'));
-    }
-
-    public function testParsingANamespacedClass()
-    {
-        $program = <<<PROGRAM
-<?php
-namespace PhpLint\Test\Ast;
-
-class Test
-{
-}
-PROGRAM;
-
-        $sourceContext = $this->parser->parse($program, 'test.php');
-
-        /** @var AstNode[] $sourceContents */
-        $sourceContents = $sourceContext->getAst()->get('contents');
-        $this->assertCount(1, $sourceContents);
-
-        /** @var AstNode $namespaceNode */
-        $namespaceNode = $sourceContents[0];
-        $this->assertNodeType(AstNodeType::NAMESPACE, $namespaceNode);
-
-        /** @var AstNode $nameNode */
-        $nameNode = $namespaceNode->get('name');
-        $this->assertNodeType(AstNodeType::NAME, $nameNode);
-        $this->assertEquals(['PhpLint', 'Test', 'Ast'], $nameNode->get('parts'));
-    }
-
-    public function testCallGetChildrenOnAParsedNamespace()
-    {
-        $program = <<<PROGRAM
-<?php
-namespace PhpLint\Test\Ast;
-
-class Test
-{
-}
-PROGRAM;
-
-        $sourceContext = $this->parser->parse($program, 'test.php');
-        $children = $sourceContext->getAst()->get('contents')[0]->getChildren();
-
-        $this->assertCount(2, $children);
-        $this->assertNodeType(AstNodeType::NAME, $children[0]);
-        $this->assertNodeType(AstNodeType::CLASS_DECLARATION, $children[1]);
-    }
-
-    public function testParsingASimpleStringVariableAssignment()
-    {
-        $program = <<<PROGRAM
-<?php
-\$a = 'asdf';
-PROGRAM;
-
-        $sourceContext = $this->parser->parse($program, 'test.php');
-
-        $exprNode= $sourceContext->getAst()->get('contents')[0];
-        $this->assertNodeType(AstNodeType::EXPRESSION, $exprNode);
-
-        $assignmentNode = $exprNode->get('expr');
-        $this->assertNodeType(AstNodeType::ASSIGNMENT, $assignmentNode);
-
-        $varNode = $assignmentNode->get('var');
-        $this->assertNodeType(AstNodeType::VARIABLE, $varNode);
-        $this->assertEquals('a', $varNode->get('name'));
-
-        $stringNode = $assignmentNode->get('expr');
-        $this->assertNodeType(AstNodeType::STRING, $stringNode);
-        $this->assertEquals('asdf', $stringNode->get('value'));
+        $this->assertNodeType(SourceRoot::class, $sourceRoot);
     }
 }

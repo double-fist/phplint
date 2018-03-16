@@ -3,12 +3,15 @@ declare(strict_types=1);
 
 namespace PhpLint\Ast;
 
+use PhpLint\Ast\Node\SourceRoot;
+use PhpParser\Node;
+
 interface SourceContext
 {
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getPath(): string;
+    public function getPath();
 
     /**
      * @return string
@@ -16,9 +19,13 @@ interface SourceContext
     public function getContent(): string;
 
     /**
-     * @return AstNode
+     * @return SourceRoot
      */
-    public function getAst(): AstNode;
+    public function getAst(): SourceRoot;
 
-    public function getSourceRangeOfNode(AstNode $node): SourceRange;
+    /**
+     * @param Node $node
+     * @return SourceRange
+     */
+    public function getSourceRangeOfNode(Node $node): SourceRange;
 }

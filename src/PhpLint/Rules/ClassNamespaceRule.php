@@ -3,10 +3,12 @@ declare(strict_types=1);
 
 namespace PhpLint\Rules;
 
-use PhpLint\Ast\AstNode;
-use PhpLint\Ast\AstNodeType;
+use PhpLint\Ast\AstNodeTraverser;
 use PhpLint\Ast\SourceContext;
 use PhpLint\Linter\LintResult;
+use PhpParser\Node;
+use PhpParser\Node\Stmt\Class_;
+use PhpParser\Node\Stmt\Namespace_;
 
 class ClassNamespaceRule extends AbstractRule
 {
@@ -39,17 +41,17 @@ class ClassNamespaceRule extends AbstractRule
     public function getTypes(): array
     {
         return [
-            AstNodeType::CLASS_DECLARATION,
+            Class_::class,
         ];
     }
 
     /**
      * @inheritdoc
      */
-    public function validate(AstNode $node, SourceContext $context, $ruleConfig, LintResult $result)
+    public function validate(Node $node, SourceContext $context, $ruleConfig, LintResult $result)
     {
-        $parentNode = $node->getParent();
-        if (!$parentNode || $parentNode->getType() !== AstNodeType::NAMESPACE) {
+        $parentNode = AstNodeTraverser::getParent($node);
+        if (!$parentNode || !($parentNode instanceof Namespace_)) {
             $result->reportViolation(
                 $this->getName(),
                 RuleSeverity::getRuleSeverity($ruleConfig),

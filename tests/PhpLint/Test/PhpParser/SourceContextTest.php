@@ -4,11 +4,12 @@ declare(strict_types=1);
 namespace PhpLint\Test\PhpParser;
 
 use PhpLint\AbstractParser;
-use PhpLint\Ast\AstNode;
-use PhpLint\Ast\AstNodeType;
 use PhpLint\Ast\SourceRange;
 use PhpLint\PhpParser\PhpParser;
 use PhpLint\TestHelpers\AstTestCase;
+use PhpParser\Node;
+use PhpParser\Node\Name;
+use PhpParser\Node\Stmt\Expression;
 
 class SourceContextTest extends AstTestCase
 {
@@ -28,14 +29,14 @@ namespace PhpLint\Test\Ast;
 PROGRAM;
 
         $sourceContext = $this->parser->parse($program, 'test.php');
-        $namespaceSourceRange = $sourceContext->getSourceRangeOfNode($sourceContext->getAst()->get('contents')[0]);
+        $namespaceSourceRange = $sourceContext->getSourceRangeOfNode($sourceContext->getAst()->contents[0]);
 
         $this->assertEquals('2:1-2:27', $namespaceSourceRange->__toString());
 
-        /** @var AstNode $nameNode */
-        $nameNode = $sourceContext->getAst()->get('contents')[0]->get('name');
-        $this->assertNodeType(AstNodeType::NAME, $nameNode);
-        $this->assertEquals(['PhpLint', 'Test', 'Ast'], $nameNode->get('parts'));
+        /** @var Node $nameNode */
+        $nameNode = $sourceContext->getAst()->contents[0]->name;
+        $this->assertNodeType(Name::class, $nameNode);
+        $this->assertEquals(['PhpLint', 'Test', 'Ast'], $nameNode->parts);
     }
 
     public function testLocatingANamespaceDeclarationWhichStartsAfterSomeWhitespace()
@@ -46,14 +47,14 @@ PROGRAM;
 PROGRAM;
 
         $sourceContext = $this->parser->parse($program, 'test.php');
-        $namespaceSourceRange = $sourceContext->getSourceRangeOfNode($sourceContext->getAst()->get('contents')[0]);
+        $namespaceSourceRange = $sourceContext->getSourceRangeOfNode($sourceContext->getAst()->contents[0]);
 
         $this->assertEquals('2:4-2:30', $namespaceSourceRange->__toString());
 
-        /** @var AstNode $nameNode */
-        $nameNode = $sourceContext->getAst()->get('contents')[0]->get('name');
-        $this->assertNodeType(AstNodeType::NAME, $nameNode);
-        $this->assertEquals(['PhpLint', 'Test', 'Ast'], $nameNode->get('parts'));
+        /** @var Node $nameNode */
+        $nameNode = $sourceContext->getAst()->contents[0]->name;
+        $this->assertNodeType(Name::class, $nameNode);
+        $this->assertEquals(['PhpLint', 'Test', 'Ast'], $nameNode->parts);
     }
 
     public function testLocatingAMultilineString()
@@ -66,10 +67,10 @@ sadffdsa';
 PROGRAM;
 
         $sourceContext = $this->parser->parse($program, 'test.php');
-        $expressionNode = $sourceContext->getAst()->get('contents')[0];
+        $expressionNode = $sourceContext->getAst()->contents[0];
         $namespaceSourceRange = $sourceContext->getSourceRangeOfNode($expressionNode);
 
-        $this->assertNodeType(AstNodeType::EXPRESSION, $expressionNode);
+        $this->assertNodeType(Expression::class, $expressionNode);
         $this->assertEquals('2:1-4:10', $namespaceSourceRange->__toString());
     }
 }

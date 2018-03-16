@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace PhpLint\Linter;
 
-use PhpLint\Ast\AstNode;
+use PhpParser\Node;
 
 class RuleViolation
 {
@@ -23,7 +23,7 @@ class RuleViolation
     protected $messageId;
 
     /**
-     * @var AstNode
+     * @var Node
      */
     protected $node;
 
@@ -31,9 +31,9 @@ class RuleViolation
      * @param string $ruleName
      * @param string $severity
      * @param string $messageId
-     * @param AstNode $node
+     * @param Node $node
      */
-    public function __construct(string $ruleName, string $severity, string $messageId, AstNode $node)
+    public function __construct(string $ruleName, string $severity, string $messageId, Node $node)
     {
         $this->ruleName = $ruleName;
         $this->severity = $severity;
@@ -66,9 +66,9 @@ class RuleViolation
     }
 
     /**
-     * @return AstNode
+     * @return Node
      */
-    public function getNode(): AstNode
+    public function getNode(): Node
     {
         return $this->node;
     }

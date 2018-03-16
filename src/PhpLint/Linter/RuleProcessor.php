@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace PhpLint\Linter;
 
-use PhpLint\Ast\AstNode;
 use PhpLint\Ast\SourceContext;
 use PhpLint\Configuration\Configuration;
 use PhpLint\Rules\RuleLoader;
+use PhpParser\Node;
 
 class RuleProcessor
 {
@@ -30,11 +30,11 @@ class RuleProcessor
     }
 
     /**
-     * @param AstNode $node
+     * @param Node $node
      * @param SourceContext $sourceContext
      * @param LintResult $lintResult
      */
-    public function runRules(AstNode $node, SourceContext $sourceContext, LintResult $lintResult)
+    public function runRules(Node $node, SourceContext $sourceContext, LintResult $lintResult)
     {
         foreach ($this->config->getRules() as $ruleName => $ruleConfig) {
             $rule = $this->ruleLoader->loadRule($ruleName);

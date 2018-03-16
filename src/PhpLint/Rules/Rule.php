@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace PhpLint\Rules;
 
-use PhpLint\Ast\AstNode;
 use PhpLint\Ast\SourceContext;
 use PhpLint\Linter\LintResult;
+use PhpParser\Node;
 
 interface Rule
 {
@@ -25,16 +25,16 @@ interface Rule
     public function getTypes(): array;
 
     /**
-     * @param AstNode $node
+     * @param Node $node
      * @return bool
      */
-    public function canValidateNode(AstNode $node): bool;
+    public function canValidateNode(Node $node): bool;
 
     /**
-     * @param AstNode $node
+     * @param Node $node
      * @param SourceContext $context
      * @param string|array $ruleConfig
      * @param LintResult $result
      */
-    public function validate(AstNode $node, SourceContext $context, $ruleConfig, LintResult $result);
+    public function validate(Node $node, SourceContext $context, $ruleConfig, LintResult $result);
 }

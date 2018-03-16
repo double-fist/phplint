@@ -3,10 +3,11 @@ declare(strict_types=1);
 
 namespace PhpLint\Rules;
 
-use PhpLint\Ast\AstNode;
-use PhpLint\Ast\AstNodeType;
+use PhpLint\Ast\AstNodeTraverser;
 use PhpLint\Ast\SourceContext;
 use PhpLint\Linter\LintResult;
+use PhpParser\Node;
+use PhpParser\Node\Stmt\Namespace_;
 
 class SingleNamespaceInFileRule extends AbstractRule
 {
@@ -49,30 +50,40 @@ class SingleNamespaceInFileRule extends AbstractRule
     public function getTypes(): array
     {
         return [
-            AstNodeType::NAMESPACE,
+            Namespace_::class,
         ];
     }
 
     /**
      * @inheritdoc
      */
-    public function validate(AstNode $node, SourceContext $context, $ruleConfig, LintResult $result)
+    public function validate(Node $node, SourceContext $context, $ruleConfig, LintResult $result)
     {
-        // Check the AST for other namespace declarations before the given node
-        $siblings =  ($node->getParent()) ? $node->getParent()->getChildren() : [];
+        $parent = AstNodeTraverser::getParent($node);
+        if (!$parent) {
+            return;
+        }
+
+        // Check the AST for other namespace declarations BEFORE the given node, which is why we explicitly traverse the
+        // parents children and stop once we reached the given node without finding a violation.
+        $siblings = AstNodeTraverser::getChildren($parent);
         foreach ($siblings as $sibling) {
-            if ($sibling->getType() !== AstNodeType::NAMESPACE) {
+            if (!($sibling instanceof Namespace_)) {
                 continue;
             }
 
-            if ($sibling !== $node) {
-                $result->reportViolation(
-                    $this->getName(),
-                    RuleSeverity::getRuleSeverity($ruleConfig),
-                    self::MESSAGE_ID_MULTIPLE_NAMESPACE_DECLARATIONS_IN_FILE,
-                    $node
-                );
+            if ($sibling === $node) {
+                // Node is first namespace
+                return;
             }
+
+            // Found namespace before the given node
+            $result->reportViolation(
+                $this->getName(),
+                RuleSeverity::getRuleSeverity($ruleConfig),
+                self::MESSAGE_ID_MULTIPLE_NAMESPACE_DECLARATIONS_IN_FILE,
+                $node
+            );
 
             break;
         }

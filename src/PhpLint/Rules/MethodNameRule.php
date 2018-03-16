@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace PhpLint\Rules;
 
-use PhpLint\Ast\AstNode;
-use PhpLint\Ast\AstNodeType;
 use PhpLint\Ast\SourceContext;
 use PhpLint\Linter\LintResult;
+use PhpParser\Node;
+use PhpParser\Node\Stmt\ClassMethod;
 
 class MethodNameRule extends AbstractRule
 {
@@ -70,16 +70,16 @@ class MethodNameRule extends AbstractRule
     public function getTypes(): array
     {
         return [
-            AstNodeType::CLASS_METHOD,
+            ClassMethod::class,
         ];
     }
 
     /**
      * @inheritdoc
      */
-    public function validate(AstNode $node, SourceContext $context, $ruleConfig, LintResult $result)
+    public function validate(Node $node, SourceContext $context, $ruleConfig, LintResult $result)
     {
-        $methodName = $node->get('name');
+        $methodName = $node->name;
         if (!$methodName || mb_strlen($methodName->name) === 0) {
             return;
         }

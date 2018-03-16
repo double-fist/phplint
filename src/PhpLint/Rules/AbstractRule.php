@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace PhpLint\Rules;
 
-use PhpLint\Ast\AstNode;
 use PhpLint\Ast\SourceContext;
 use PhpLint\Linter\LintResult;
+use PhpParser\Node;
 
 abstract class AbstractRule implements Rule
 {
@@ -41,9 +41,9 @@ abstract class AbstractRule implements Rule
     /**
      * @inheritdoc
      */
-    public function canValidateNode(AstNode $node): bool
+    public function canValidateNode(Node $node): bool
     {
-        return in_array($node->getType(), $this->getTypes());
+        return in_array(get_class($node), $this->getTypes());
     }
 
     /**
@@ -54,5 +54,5 @@ abstract class AbstractRule implements Rule
     /**
      * @inheritdoc
      */
-    abstract public function validate(AstNode $node, SourceContext $context, $ruleConfig, LintResult $result);
+    abstract public function validate(Node $node, SourceContext $context, $ruleConfig, LintResult $result);
 }

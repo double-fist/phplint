@@ -4,17 +4,14 @@ declare(strict_types=1);
 namespace PhpLint\PhpParser;
 
 use PhpLint\AbstractParser;
-use PhpLint\Ast\AstNode;
-use PhpLint\Ast\AstNodeType;
+use PhpLint\Ast\AstNodeTraverser;
+use PhpLint\Ast\Node\SourceRoot;
 use PhpLint\Ast\SourceContext;
 use PhpLint\Ast\SourceLocation;
 use PhpLint\Ast\SourceRange;
 use PhpLint\Ast\Token;
 use PhpParser\Lexer;
-use PhpParser\Node\Expr;
-use PhpParser\Node\Name;
-use PhpParser\Node\Scalar;
-use PhpParser\Node\Stmt;
+use PhpParser\Node;
 use PhpParser\ParserFactory;
 
 class PhpParser extends AbstractParser
@@ -47,12 +44,8 @@ class PhpParser extends AbstractParser
     {
         $parserResult = $this->phpParser->parse($code);
 
-        $astRoot = new ParserAstNode(
-            AstNodeType::SOURCE_ROOT,
-            [
-                'contents' => $this->transformPhpParserNodes($parserResult),
-            ]
-        );
+        $astRoot = new SourceRoot($parserResult);
+        AstNodeTraverser::createParentBackLinks($astRoot);
 
         $tokens = $this->transformTokens($this->lexer->getTokens());
 
@@ -62,106 +55,6 @@ class PhpParser extends AbstractParser
             $code,
             $path
         );
-    }
-
-    private function transformPhpParserNode($parserNode): AstNode
-    {
-        switch (true) {
-            case $parserNode instanceof Stmt\Class_:
-                return new ParserAstNode(
-                    AstNodeType::CLASS_DECLARATION,
-                    [
-                        'name' => $parserNode->name,
-                        'statements' => $this->transformPhpParserNodes($parserNode->stmts),
-                    ],
-                    $parserNode
-                );
-
-            case $parserNode instanceof Stmt\ClassConst:
-                return new ParserAstNode(
-                    AstNodeType::CLASS_CONST,
-                    [
-                        'name' => $parserNode->consts[0]->name,
-                        'value' => $parserNode->consts[0]->value,
-                    ],
-                    $parserNode
-                );
-
-            case $parserNode instanceof Stmt\ClassMethod:
-                return new ParserAstNode(
-                    AstNodeType::CLASS_METHOD,
-                    [
-                        'name' => $parserNode->name,
-                    ],
-                    $parserNode
-                );
-
-            case $parserNode instanceof Name:
-                return new ParserAstNode(
-                    AstNodeType::NAME,
-                    [
-                        'parts' => $parserNode->parts,
-                    ],
-                    $parserNode
-                );
-
-            case $parserNode instanceof Stmt\Namespace_:
-                return new ParserAstNode(
-                    AstNodeType::NAMESPACE,
-                    [
-                        'name' => $this->transformPhpParserNode($parserNode->name),
-                        'statements' => $this->transformPhpParserNodes($parserNode->stmts),
-                    ],
-                    $parserNode
-                );
-
-            case $parserNode instanceof Stmt\Expression:
-                return new ParserAstNode(
-                    AstNodeType::EXPRESSION,
-                    [
-                        'expr' => $this->transformPhpParserNode($parserNode->expr),
-                    ],
-                    $parserNode
-                );
-
-            case $parserNode instanceof Expr\Assign:
-                return new ParserAstNode(
-                    AstNodeType::ASSIGNMENT,
-                    [
-                        'var' => $this->transformPhpParserNode($parserNode->var),
-                        'expr' => $this->transformPhpParserNode($parserNode->expr),
-                    ],
-                    $parserNode
-                );
-
-            case $parserNode instanceof Expr\Variable:
-                return new ParserAstNode(
-                    AstNodeType::VARIABLE,
-                    [
-                        'name' => $parserNode->name,
-                    ],
-                    $parserNode
-                );
-
-            case $parserNode instanceof Scalar\String_:
-                return new ParserAstNode(
-                    AstNodeType::STRING,
-                    [
-                        'value' => $parserNode->value,
-                    ],
-                    $parserNode
-                );
-
-            default:
-                throw new \InvalidArgumentException(sprintf('Unknown node type %s', get_class($parserNode)));
-        }
-    }
-
-    private function transformPhpParserNodes(array $parserResults): array
-    {
-        return array_map(function ($parserResult) {
-            return $this->transformPhpParserNode($parserResult);
-        }, $parserResults);
     }
 
     /**

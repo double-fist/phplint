@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace PhpLint\TestHelpers\Rules;
 
 use Exception;
-use PhpLint\Ast\AstNode;
 use PhpLint\PhpParser\ParserContext;
 use PhpLint\Linter\LintResult;
 use PhpLint\Rules\Rule;

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace PhpLint\TestHelpers;
 
-use PhpLint\Ast\AstNode;
+use PhpParser\Node;
 use PHPUnit\Framework\Constraint\Constraint;
 
 class AstNodeTypeConstraint extends Constraint
@@ -19,11 +19,11 @@ class AstNodeTypeConstraint extends Constraint
 
     public function matches($other)
     {
-        if (!($other instanceof AstNode)) {
+        if (!($other instanceof Node)) {
             return false;
         }
 
-        return $other->getType() === $this->expectedNodeType;
+        return get_class($other) === $this->expectedNodeType;
     }
 
     public function toString()
