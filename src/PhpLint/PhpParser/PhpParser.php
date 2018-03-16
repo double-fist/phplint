@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace PhpLint\PhpParser;
 
 use PhpLint\AbstractParser;
-use PhpLint\Ast\AstNodeTraverser;
 use PhpLint\Ast\Node\SourceRoot;
+use PhpLint\Ast\NodeTraverser;
 use PhpLint\Ast\SourceContext;
 use PhpLint\Ast\SourceLocation;
 use PhpLint\Ast\SourceRange;
@@ -45,7 +45,7 @@ class PhpParser extends AbstractParser
         $parserResult = $this->phpParser->parse($code);
 
         $astRoot = new SourceRoot($parserResult);
-        AstNodeTraverser::createParentBackLinks($astRoot);
+        NodeTraverser::createParentBackLinks($astRoot);
 
         $tokens = $this->transformTokens($this->lexer->getTokens());
 

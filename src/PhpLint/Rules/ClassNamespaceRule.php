@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace PhpLint\Rules;
 
-use PhpLint\Ast\AstNodeTraverser;
+use PhpLint\Ast\NodeTraverser;
 use PhpLint\Ast\SourceContext;
 use PhpLint\Linter\LintResult;
 use PhpParser\Node;
@@ -50,7 +50,7 @@ class ClassNamespaceRule extends AbstractRule
      */
     public function validate(Node $node, SourceContext $context, $ruleConfig, LintResult $result)
     {
-        $parentNode = AstNodeTraverser::getParent($node);
+        $parentNode = NodeTraverser::getParent($node);
         if (!$parentNode || !($parentNode instanceof Namespace_)) {
             $result->reportViolation(
                 $this->getName(),

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace PhpLint\Test\Ast;
 
-use PhpLint\Ast\AstNodeTraverser;
+use PhpLint\Ast\NodeTraverser;
 use PhpLint\Configuration\ConfigurationValidator;
 use PhpParser\Node;
 use PhpParser\NodeAbstract;
@@ -38,7 +38,7 @@ class TestNode extends NodeAbstract
         );
 
         $root = new self($rootId, $children);
-        AstNodeTraverser::createParentBackLinks($root);
+        NodeTraverser::createParentBackLinks($root);
 
         return $root;
     }

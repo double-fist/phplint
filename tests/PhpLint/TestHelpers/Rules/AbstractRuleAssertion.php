@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace PhpLint\TestHelpers\Rules;
 
 use Exception;
-use PhpLint\Ast\AstNodeTraverser;
+use PhpLint\Ast\NodeTraverser;
 use PhpLint\Ast\SourceContext;
 use PhpLint\PhpParser\ParserContext;
 use PhpLint\Linter\LintResult;
@@ -91,7 +91,7 @@ abstract class AbstractRuleAssertion
      */
     protected function validateRule(SourceContext $sourceContext, LintResult $lintResult)
     {
-        $nodeTraverser = new AstNodeTraverser($sourceContext->getAst());
+        $nodeTraverser = new NodeTraverser($sourceContext->getAst());
         foreach ($nodeTraverser as $node) {
             if ($this->getRule()->canValidateNode($node)) {
                 $this->getRule()->validate($node, $sourceContext, RuleSeverity::SEVERITY_ERROR, $lintResult);

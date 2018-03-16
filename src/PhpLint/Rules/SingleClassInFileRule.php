@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace PhpLint\Rules;
 
-use PhpLint\Ast\AstNodeTraverser;
+use PhpLint\Ast\NodeTraverser;
 use PhpLint\Ast\SourceContext;
 use PhpLint\Linter\LintResult;
 use PhpParser\Node;
@@ -58,14 +58,14 @@ class SingleClassInFileRule extends AbstractRule
      */
     public function validate(Node $node, SourceContext $context, $ruleConfig, LintResult $result)
     {
-        $parent = AstNodeTraverser::getParent($node);
+        $parent = NodeTraverser::getParent($node);
         if (!$parent) {
             return;
         }
 
         // Check the AST for other class declarations BEFORE the given node, which is why we explicitly traverse the
         // parents children and stop once we reached the given node without finding a violation.
-        $siblings = AstNodeTraverser::getChildren($parent);
+        $siblings = NodeTraverser::getChildren($parent);
         foreach ($siblings as $sibling) {
             if (!($sibling instanceof Class_)) {
                 continue;

@@ -6,7 +6,7 @@ namespace PhpLint\Ast;
 use Iterator;
 use PhpParser\Node;
 
-class AstNodeTraverser implements Iterator
+class NodeTraverser implements Iterator
 {
     const PARENT_ATTRIBUTE_NAME = 'phplint_parent';
 

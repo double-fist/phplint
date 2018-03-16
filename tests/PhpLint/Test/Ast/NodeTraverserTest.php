@@ -3,18 +3,18 @@ declare(strict_types=1);
 
 namespace PhpLint\Test\Ast;
 
-use PhpLint\Ast\AstNodeTraverser;
+use PhpLint\Ast\NodeTraverser;
 use PHPUnit\Framework\TestCase;
 
-class AstNodeTraverserTest extends TestCase
+class NodeTraverserTest extends TestCase
 {
     public function testGetParent()
     {
         $root = new TestNode('root');
         $rootChild0 = new TestNode('root_child0');
-        $rootChild0->setAttribute(AstNodeTraverser::PARENT_ATTRIBUTE_NAME, $root);
+        $rootChild0->setAttribute(NodeTraverser::PARENT_ATTRIBUTE_NAME, $root);
 
-        self::assertEqualsNode($root, AstNodeTraverser::getParent($rootChild0));
+        self::assertEqualsNode($root, NodeTraverser::getParent($rootChild0));
     }
 
     public function testGetChildren()
@@ -26,7 +26,7 @@ class AstNodeTraverserTest extends TestCase
             $rootChild1,
         ]);
 
-        $children = AstNodeTraverser::getChildren($root);
+        $children = NodeTraverser::getChildren($root);
         self::assertCount(2, $children);
         self::assertEqualsNode($rootChild0, $children[0]);
         self::assertEqualsNode($rootChild1, $children[1]);
@@ -40,17 +40,17 @@ class AstNodeTraverserTest extends TestCase
             $rootChild0,
             $rootChild1,
         ]);
-        $rootChild0->setAttribute(AstNodeTraverser::PARENT_ATTRIBUTE_NAME, $root);
-        $rootChild1->setAttribute(AstNodeTraverser::PARENT_ATTRIBUTE_NAME, $root);
+        $rootChild0->setAttribute(NodeTraverser::PARENT_ATTRIBUTE_NAME, $root);
+        $rootChild1->setAttribute(NodeTraverser::PARENT_ATTRIBUTE_NAME, $root);
 
-        $rootSiblings = AstNodeTraverser::getSiblings($root);
+        $rootSiblings = NodeTraverser::getSiblings($root);
         self::assertCount(0, $rootSiblings);
 
-        $rootChild0Siblings = AstNodeTraverser::getSiblings($rootChild0);
+        $rootChild0Siblings = NodeTraverser::getSiblings($rootChild0);
         self::assertCount(1, $rootChild0Siblings);
         self::assertEqualsNode($rootChild1, $rootChild0Siblings[0]);
 
-        $rootChild1Siblings = AstNodeTraverser::getSiblings($rootChild1);
+        $rootChild1Siblings = NodeTraverser::getSiblings($rootChild1);
         self::assertCount(1, $rootChild1Siblings);
         self::assertEqualsNode($rootChild0, $rootChild1Siblings[0]);
     }
@@ -65,10 +65,10 @@ class AstNodeTraverserTest extends TestCase
             $rootChild0,
         ]);
 
-        AstNodeTraverser::createParentBackLinks($root);
-        self::assertNull(AstNodeTraverser::getParent($root));
-        self::assertEqualsNode($root, AstNodeTraverser::getParent($rootChild0));
-        self::assertEqualsNode($rootChild0, AstNodeTraverser::getParent($rootChild0Child0));
+        NodeTraverser::createParentBackLinks($root);
+        self::assertNull(NodeTraverser::getParent($root));
+        self::assertEqualsNode($root, NodeTraverser::getParent($rootChild0));
+        self::assertEqualsNode($rootChild0, NodeTraverser::getParent($rootChild0Child0));
     }
 
     public function testTraversalIsDepthFirst()
@@ -85,33 +85,33 @@ class AstNodeTraverserTest extends TestCase
                 ],
             ]
         );
-        $traverser = new AstNodeTraverser($testTree);
+        $traverser = new NodeTraverser($testTree);
 
         self::assertEqualsNode($testTree, $traverser->current());
         self::assertTrue($traverser->valid());
         $traverser->next();
 
-        $rootChild0 = AstNodeTraverser::getChildren($testTree)[0];
+        $rootChild0 = NodeTraverser::getChildren($testTree)[0];
         self::assertEqualsNode($rootChild0, $traverser->current());
         self::assertTrue($traverser->valid());
         $traverser->next();
 
-        $rootChild0Child0 = AstNodeTraverser::getChildren($rootChild0)[0];
+        $rootChild0Child0 = NodeTraverser::getChildren($rootChild0)[0];
         self::assertEqualsNode($rootChild0Child0, $traverser->current());
         self::assertTrue($traverser->valid());
         $traverser->next();
 
-        $rootChild0Child1 = AstNodeTraverser::getChildren($rootChild0)[1];
+        $rootChild0Child1 = NodeTraverser::getChildren($rootChild0)[1];
         self::assertEqualsNode($rootChild0Child1, $traverser->current());
         self::assertTrue($traverser->valid());
         $traverser->next();
 
-        $rootChild1 = AstNodeTraverser::getChildren($testTree)[1];
+        $rootChild1 = NodeTraverser::getChildren($testTree)[1];
         self::assertEqualsNode($rootChild1, $traverser->current());
         self::assertTrue($traverser->valid());
         $traverser->next();
 
-        $rootChild1Child0 = AstNodeTraverser::getChildren($rootChild1)[0];
+        $rootChild1Child0 = NodeTraverser::getChildren($rootChild1)[0];
         self::assertEqualsNode($rootChild1Child0, $traverser->current());
         self::assertTrue($traverser->valid());
         $traverser->next();
@@ -134,13 +134,13 @@ class AstNodeTraverserTest extends TestCase
                 ],
             ]
         );
-        $traverser = new AstNodeTraverser($testTree);
+        $traverser = new NodeTraverser($testTree);
 
-        $rootChild0 = AstNodeTraverser::getChildren($testTree)[0];
-        $rootChild0Child0 = AstNodeTraverser::getChildren($rootChild0)[0];
-        $rootChild0Child1 = AstNodeTraverser::getChildren($rootChild0)[1];
-        $rootChild1 = AstNodeTraverser::getChildren($testTree)[1];
-        $rootChild1Child0 = AstNodeTraverser::getChildren($rootChild1)[0];
+        $rootChild0 = NodeTraverser::getChildren($testTree)[0];
+        $rootChild0Child0 = NodeTraverser::getChildren($rootChild0)[0];
+        $rootChild0Child1 = NodeTraverser::getChildren($rootChild0)[1];
+        $rootChild1 = NodeTraverser::getChildren($testTree)[1];
+        $rootChild1Child0 = NodeTraverser::getChildren($rootChild1)[0];
 
         $expectedNodes = [
             $testTree,

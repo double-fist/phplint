@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace PhpLint\Linter;
 
-use PhpLint\Ast\AstNodeTraverser;
+use PhpLint\Ast\NodeTraverser;
 use PhpLint\Configuration\Configuration;
 use PhpLint\Configuration\ConfigurationLoader;
 use PhpLint\PhpParser\PhpParser;
@@ -110,7 +110,7 @@ class Linter
 
         // Run rules on all nodes of the source context
         $ruleProcessor = new RuleProcessor($fileConfig);
-        $nodeTraverser = new AstNodeTraverser($sourceContext->getAst());
+        $nodeTraverser = new NodeTraverser($sourceContext->getAst());
         foreach ($nodeTraverser as $node) {
             $ruleProcessor->runRules($node, $sourceContext, $lintResult);
         }
