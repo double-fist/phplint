@@ -128,7 +128,7 @@ class AstNodeTraverser implements Iterator
      */
     public function next()
     {
-        $this->currentNode = self::findNextNode($this->currentNode);
+        $this->currentNode = $this->findNextNode($this->currentNode);
         $this->counter += 1;
     }
 
@@ -153,7 +153,7 @@ class AstNodeTraverser implements Iterator
      * @param Node $node
      * @return Node|null
      */
-    protected static function findNextNode(Node $node, $isTraversingDown = true)
+    protected function findNextNode(Node $node, $isTraversingDown = true)
     {
         // Check for children first (depth first), if we're traversing the tree downwards
         if ($isTraversingDown && count(self::getChildren($node)) > 0) {
@@ -161,7 +161,7 @@ class AstNodeTraverser implements Iterator
         }
 
         $parent = self::getParent($node);
-        if (!$parent) {
+        if (!$parent || $node === $this->rootNode) {
             // No nodes left
             return null;
         }
@@ -175,6 +175,6 @@ class AstNodeTraverser implements Iterator
         }
 
         // Current node is last or only sibling, hence traverse the tree up and keep searching
-        return self::findNextNode($parent, false);
+        return $this->findNextNode($parent, false);
     }
 }
