@@ -61,7 +61,7 @@ class StylishLintResultFormatter implements LintResultFormatter
             $output->writeln('<lint_result-stylish-filename>' . $filename . '</lint_result-stylish-filename>');
             foreach (self::formatTableData($tableRows) as $row) {
                 $output->write('  <lint_result-stylish-default>' . $row[0] . '</lint_result-stylish-default>');
-                if ($row[1] === RuleSeverity::SEVERITY_ERROR) {
+                if (trim($row[1]) === RuleSeverity::SEVERITY_ERROR) {
                     $errorCount += 1;
                     $summaryColor = 'red';
                     $output->write('  <lint_result-stylish-error>' . $row[1] . '</lint_result-stylish-error>');
