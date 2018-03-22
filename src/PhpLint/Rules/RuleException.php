@@ -34,7 +34,7 @@ class RuleException extends Exception
             'Rule "%s" encountered a node of unexpected type "%s". Expected one of the following types instead: "%s".',
             $ruleName,
             $givenNodeType,
-            implode('", "', $expectedNodeTypes),
+            implode('", "', $expectedNodeTypes)
         ));
     }
 }
