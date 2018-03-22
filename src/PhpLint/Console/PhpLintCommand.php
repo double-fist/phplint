@@ -84,10 +84,8 @@ class PhpLintCommand extends Command
         $resultFormatter = $formatterFactory->createLintResultFormatter($outputFormat);
 
         // Lint all PHP files found in the path
-        $output->writeln('Linting all files at path ' . $lintPath);
         $linter = new Linter();
         $lintResult = $linter->lintFilesAtPaths($phpFilePaths, $config, $lintResult);
-        $output->writeln('Done!');
 
         // Format the result
         $resultFormatter->formatResult($lintResult, $output);
