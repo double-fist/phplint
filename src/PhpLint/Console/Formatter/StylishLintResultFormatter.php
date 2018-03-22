@@ -17,6 +17,10 @@ class StylishLintResultFormatter implements LintResultFormatter
      */
     public function formatResult(LintResult $lintResult, OutputInterface $output)
     {
+        if (count($lintResult) === 0) {
+            return;
+        }
+
         $formatter = $output->getFormatter();
         $formatter->setStyle(
             'lint_result-stylish-default',
@@ -75,25 +79,23 @@ class StylishLintResultFormatter implements LintResultFormatter
             $output->writeln('');
         }
 
-        if (count($lintResult) > 0) {
-            // Print a summary
-            $formatter->setStyle(
-                'lint_result-stylish-summary',
-                new OutputFormatterStyle($summaryColor, 'default', ['bold'])
-            );
-            $output->writeln(sprintf(
-                "<lint_result-stylish-summary>\xE2\x9C\x96 %d %s (%d %s, %d %s)</lint_result-stylish-summary>",
-                count($lintResult),
-                self::pluralize('problem', count($lintResult)),
-                $errorCount,
-                self::pluralize('error', $errorCount),
-                $warningCount,
-                self::pluralize('warning', $warningCount)
-            ));
+        // Print a summary
+        $formatter->setStyle(
+            'lint_result-stylish-summary',
+            new OutputFormatterStyle($summaryColor, 'default', ['bold'])
+        );
+        $output->writeln(sprintf(
+            "<lint_result-stylish-summary>\xE2\x9C\x96 %d %s (%d %s, %d %s)</lint_result-stylish-summary>",
+            count($lintResult),
+            self::pluralize('problem', count($lintResult)),
+            $errorCount,
+            self::pluralize('error', $errorCount),
+            $warningCount,
+            self::pluralize('warning', $warningCount)
+        ));
 
-            // Append an empty lines
-            $output->writeln('');
-        }
+        // Append an empty lines
+        $output->writeln('');
     }
 
     /**
