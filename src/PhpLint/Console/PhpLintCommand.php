@@ -12,6 +12,8 @@ use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
 
 use PhpLint\Configuration\Configuration;
+use PhpLint\Console\Formatter\FormatterFactory;
+use PhpLint\Console\Formatter\StylishLintResultFormatter;
 use PhpLint\Linter\Linter;
 use PhpLint\Linter\LintResult;
 use RecursiveCallbackFilterIterator;
@@ -22,6 +24,7 @@ class PhpLintCommand extends Command
 {
     const ARG_NAME_LINT_PATH = 'lint-path';
     const OPTION_NAME_ERRORS_ONLY = 'errors-only';
+    const OPTION_NAME_FORMAT = 'format';
 
     /**
      * @inheritdoc
@@ -41,6 +44,13 @@ class PhpLintCommand extends Command
                 null,
                 InputOption::VALUE_NONE,
                 'Report errors only'
+            ),
+            new InputOption(
+                self::OPTION_NAME_FORMAT,
+                'f',
+                InputOption::VALUE_OPTIONAL,
+                'Use a specific output format - default: stylish',
+                StylishLintResultFormatter::NAME
             ),
         ]);
         $this->setDescription('Lints the file(s) at the specified path');
@@ -68,18 +78,19 @@ class PhpLintCommand extends Command
         $errorsOnly = $input->getOption(self::OPTION_NAME_ERRORS_ONLY);
         $lintResult = new LintResult($errorsOnly);
 
+        // Prepare the result formatter
+        $formatterFactory = new FormatterFactory();
+        $outputFormat = $input->getOption(self::OPTION_NAME_FORMAT);
+        $resultFormatter = $formatterFactory->createLintResultFormatter($outputFormat);
+
         // Lint all PHP files found in the path
         $output->writeln('Linting all files at path ' . $lintPath);
         $linter = new Linter();
         $lintResult = $linter->lintFilesAtPaths($phpFilePaths, $config, $lintResult);
         $output->writeln('Done!');
 
-        // TODO: Format the result
-        if (count($lintResult) > 0) {
-            $output->writeln(sprintf('Found %d violations!', count($lintResult)));
-        } else {
-            $output->writeln('No violations found.');
-        }
+        // Format the result
+        $resultFormatter->formatResult($lintResult, $output);
     }
 
     /**
