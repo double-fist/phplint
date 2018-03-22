@@ -3,11 +3,13 @@ declare(strict_types=1);
 
 namespace PhpLint\Rules;
 
+use PhpLint\Ast\Node\SourceRoot;
 use PhpLint\Ast\NodeTraverser;
 use PhpLint\Ast\SourceContext;
 use PhpLint\Linter\LintResult;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\Class_;
+use PhpParser\Node\Stmt\Namespace_;
 
 class SingleClassInFileRule extends AbstractRule
 {
@@ -30,6 +32,12 @@ class SingleClassInFileRule extends AbstractRule
                     RuleDescription::createPhpCodeExample(
                         'namespace PhpLint\Rules;',
                         'class AnyClass {}',
+                        'class AnyOtherClass {}'
+                    ),
+                    RuleDescription::createPhpCodeExample(
+                        'namespace PhpLint\Rules;',
+                        'class AnyClass {}',
+                        'namespace PhpLint\OtherRules;',
                         'class AnyOtherClass {}'
                     ),
                 ])
@@ -55,28 +63,61 @@ class SingleClassInFileRule extends AbstractRule
 
     /**
      * @inheritdoc
+     * @throws RuleException if an unexpected node type is encountered.
      */
     public function validate(Node $node, SourceContext $context, $ruleConfig, LintResult $result)
     {
+        // Check for a parent
         $parent = NodeTraverser::getParent($node);
         if (!$parent) {
             return;
         }
 
-        // Check the AST for other class declarations BEFORE the given node, which is why we explicitly traverse the
-        // parents children and stop once we reached the given node without finding a violation.
-        $siblings = NodeTraverser::getChildren($parent);
-        foreach ($siblings as $sibling) {
-            if (!($sibling instanceof Class_)) {
-                continue;
-            }
+        // Make sure the parent is either a namespace or the source root, since in PHP class delcarations cannot be
+        // nested in other class definitions (i.e. private classes)
+        if (!($parent instanceof Namespace_) && !($parent instanceof SourceRoot)) {
+            throw RuleException::unexpectedNodeTypeInRule(
+                $this->getName(),
+                $parent->getType(),
+                [
+                    'Stmt_Namespace',
+                    'SourceRoot',
+                ]
+            );
+        }
 
-            if ($sibling === $node) {
-                // Node is first namespace
-                return;
-            }
+        // Collect all namespace (or source root) nodes in the file
+        $rootNodes = [
+            $parent,
+        ];
+        $parentSiblings = NodeTraverser::getSiblings($parent, true);
+        if (count($parentSiblings) > 1) {
+            // Parent must be a namespace, hence collect all namespaces in the file
+            $rootNodes = array_filter(
+                $parentSiblings,
+                function (Node $parentSibling) {
+                    return $parentSibling instanceof Namespace_;
+                }
+            );
+        }
 
-            // Found class before the given node
+        // Collect all children of all root nodes, but keep only class declarations
+        $children = array_map(
+            function (Node $rootNode) {
+                return NodeTraverser::getChildren($rootNode);
+            },
+            $rootNodes
+        );
+        $classNodes = array_values(array_filter(
+            array_merge(...$children),
+            function (Node $child) {
+                return $child instanceof Class_;
+            }
+        ));
+
+        // Try to find a violation by finding any other class that is delcared before (above) the given class node. If
+        // such a class declaration exists, the given node violates the rule.
+        if (array_search($node, $classNodes) !== 0) {
             $result->reportViolation(
                 $this,
                 RuleSeverity::getRuleSeverity($ruleConfig),
@@ -84,8 +125,6 @@ class SingleClassInFileRule extends AbstractRule
                 $context->getSourceRangeOfNode($node)->getStart(),
                 $context
             );
-
-            break;
         }
     }
 }

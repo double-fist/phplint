@@ -18,4 +18,23 @@ class RuleException extends Exception
             $ruleName
         ));
     }
+
+    /**
+     * @param string $ruleName
+     * @param string $givenNodeType
+     * @param string[] $expectedNodeTypes
+     * @return RuleException
+     */
+    public static function unexpectedNodeTypeInRule(
+        string $ruleName,
+        string $givenNodeType,
+        array $expectedNodeTypes
+    ): RuleException {
+        throw new self(sprintf(
+            'Rule "%s" encountered a node of unexpected type "%s". Expected one of the following types instead: "%s".',
+            $ruleName,
+            $givenNodeType,
+            implode('", "', $expectedNodeTypes),
+        ));
+    }
 }
