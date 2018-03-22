@@ -53,10 +53,11 @@ class ClassNamespaceRule extends AbstractRule
         $parentNode = NodeTraverser::getParent($node);
         if (!$parentNode || !($parentNode instanceof Namespace_)) {
             $result->reportViolation(
-                $this->getName(),
+                $this,
                 RuleSeverity::getRuleSeverity($ruleConfig),
                 self::MESSAGE_ID_CLASS_NOT_NAMESPACED,
-                $node
+                $context->getSourceRangeOfNode($node->name)->getStart(),
+                $context
             );
         }
     }

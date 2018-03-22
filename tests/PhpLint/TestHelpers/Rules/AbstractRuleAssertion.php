@@ -107,20 +107,20 @@ abstract class AbstractRuleAssertion
     protected function assertLintResult(LintResult $lintResult)
     {
         $definedMessages = $this->getRule()->getDescription()->getMessages();
-        $usedMessageIds = array_map(
+        $usedMessages = array_map(
             function (RuleViolation $violation) {
-                return $violation->getMessageId();
+                return $violation->getMessage();
             },
             $lintResult->getViolations()
         );
 
-        foreach ($usedMessageIds as $messageId) {
-            Assert::assertArrayHasKey(
-                $messageId,
+        foreach ($usedMessages as $message) {
+            Assert::assertContains(
+                $message,
                 $definedMessages,
                 sprintf(
                     'Failed asserting that the message ID "%s" used by rule "%s" to report a violation is known to that rule.',
-                    $messageId,
+                    $message,
                     $this->getRule()->getDescription()->getIdentifier()
                 )
             );

@@ -79,10 +79,11 @@ class SingleNamespaceInFileRule extends AbstractRule
 
             // Found namespace before the given node
             $result->reportViolation(
-                $this->getName(),
+                $this,
                 RuleSeverity::getRuleSeverity($ruleConfig),
                 self::MESSAGE_ID_MULTIPLE_NAMESPACE_DECLARATIONS_IN_FILE,
-                $node
+                $context->getSourceRangeOfNode($node)->getStart(),
+                $context
             );
 
             break;

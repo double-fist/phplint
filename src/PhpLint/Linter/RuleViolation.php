@@ -3,10 +3,15 @@ declare(strict_types=1);
 
 namespace PhpLint\Linter;
 
-use PhpParser\Node;
+use PhpLint\Ast\SourceLocation;
 
 class RuleViolation
 {
+    /**
+     * @var SourceLocation
+     */
+    protected $location;
+
     /**
      * @var string
      */
@@ -20,25 +25,28 @@ class RuleViolation
     /**
      * @var string
      */
-    protected $messageId;
+    protected $message;
 
     /**
-     * @var Node
-     */
-    protected $node;
-
-    /**
+     * @param SourceLocation $location
      * @param string $ruleName
      * @param string $severity
-     * @param string $messageId
-     * @param Node $node
+     * @param string $message
      */
-    public function __construct(string $ruleName, string $severity, string $messageId, Node $node)
+    public function __construct(SourceLocation $location, string $ruleName, string $severity, string $message)
     {
+        $this->location = $location;
         $this->ruleName = $ruleName;
         $this->severity = $severity;
-        $this->messageId = $messageId;
-        $this->node = $node;
+        $this->message = $message;
+    }
+
+    /**
+     * @return SourceLocation
+     */
+    public function getLocation(): SourceLocation
+    {
+        return $this->location;
     }
 
     /**
@@ -60,16 +68,8 @@ class RuleViolation
     /**
      * @return string
      */
-    public function getMessageId(): string
+    public function getMessage(): string
     {
-        return $this->messageId;
-    }
-
-    /**
-     * @return Node
-     */
-    public function getNode(): Node
-    {
-        return $this->node;
+        return $this->message;
     }
 }

@@ -4,6 +4,9 @@ declare(strict_types=1);
 namespace PhpLint\Linter;
 
 use Countable;
+use PhpLint\Ast\SourceContext;
+use PhpLint\Ast\SourceLocation;
+use PhpLint\Rules\Rule;
 use PhpLint\Rules\RuleSeverity;
 use PhpParser\Node;
 
@@ -15,7 +18,7 @@ class LintResult implements Countable
     private $errorsOnly;
 
     /**
-     * @var RuleViolation[]
+     * @var array
      */
     protected $violations = [];
 
@@ -36,36 +39,64 @@ class LintResult implements Countable
     }
 
     /**
-     * @return RuleViolation[]
+     * @return string[]
      */
-    public function getViolations(): array
+    public function getFilenames(): array
     {
-        return $this->violations;
+        return array_keys($this->violations);
     }
 
     /**
-     * @param string $ruleName
+     * @param string $filename
+     * @return RuleViolation[]
+     */
+    public function getViolations(string $filename = null): array
+    {
+        if ($filename !== null) {
+            return $this->violations[$filename];
+        } elseif (count($this->violations) > 0) {
+            return array_merge(...array_values($this->violations));
+        } else {
+            return [];
+        }
+    }
+
+    /**
+     * @param Rule $rule
      * @param string|int $severity
      * @param string $messageId
-     * @param Node $node
+     * @param SourceLocation $location
+     * @param SourceContext $context
      * @throws LintException if the passed $severity is invalid.
      */
-    public function reportViolation(string $ruleName, $severity, string $messageId, Node $node)
-    {
+    public function reportViolation(
+        Rule $rule,
+        $severity,
+        string $messageId,
+        SourceLocation $location,
+        SourceContext $context
+    ) {
         if (!RuleSeverity::isRuleSeverity($severity)) {
-            throw LintException::invalidRuleSeverityReported($ruleName, $severity);
+            throw LintException::invalidRuleSeverityReported($rule->getName(), $severity);
         }
 
+        // Filter out warnings, if only errors should be collected
         $errorSeverityCode = array_search(RuleSeverity::SEVERITY_ERROR, RuleSeverity::ALL_SEVERITIES);
         if ($this->errorsOnly && RuleSeverity::getRuleSeverity($severity) < $errorSeverityCode) {
             return;
         }
 
-        $this->violations[] = new RuleViolation(
-            $ruleName,
+        $violation = new RuleViolation(
+            $location,
+            $rule->getName(),
             RuleSeverity::getRuleSeverity($severity, true),
-            $messageId,
-            $node
+            $rule->getDescription()->getMessage($messageId)
         );
+
+        $filename = $context->getPath() ?? '';
+        if (!isset($this->violations[$filename])) {
+            $this->violations[$filename] = [];
+        }
+        $this->violations[$filename][] = $violation;
     }
 }

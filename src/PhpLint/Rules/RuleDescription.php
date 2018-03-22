@@ -156,6 +156,15 @@ class RuleDescription
     }
 
     /**
+     * @param string $messageId
+     * @return string
+     */
+    public function getMessage(string $messageId): string
+    {
+        return $this->messages[$messageId];
+    }
+
+    /**
      * @return string[]
      */
     public function getRejectedExamples(): array
