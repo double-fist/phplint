@@ -60,6 +60,10 @@ class ParserContext implements SourceContext
         return $this->ast;
     }
 
+    /**
+     * @param Node $node
+     * @return SourceRange
+     */
     public function getSourceRangeOfNode(Node $node): SourceRange
     {
         if ($node === $this->ast) {
@@ -72,6 +76,11 @@ class ParserContext implements SourceContext
         );
     }
 
+    /**
+     * @param int $startTokenIndex
+     * @param int $endTokenIndex
+     * @return SourceRange
+     */
     protected function getSourceRangeOfTokens(int $startTokenIndex, int $endTokenIndex): SourceRange
     {
         $startToken = $this->tokens[$startTokenIndex];
