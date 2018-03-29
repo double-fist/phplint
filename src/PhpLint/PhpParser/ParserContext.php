@@ -61,6 +61,14 @@ class ParserContext implements SourceContext
     }
 
     /**
+     * @inheritdoc
+     */
+    public function getTokens(): array
+    {
+        return $this->tokens;
+    }
+
+    /**
      * @param Node $node
      * @return SourceRange
      */

@@ -24,6 +24,11 @@ interface SourceContext
     public function getAst(): SourceRoot;
 
     /**
+     * @return array
+     */
+    public function getTokens(): array;
+
+    /**
      * @param Node $node
      * @return SourceRange
      */
