@@ -89,6 +89,9 @@ class PhpLintCommand extends Command
 
         // Format the result
         $resultFormatter->formatResult($lintResult, $output);
+
+        // Return a non-zero status code if any violations with 'error' severity were reported
+        return ($lintResult->containsErrors()) ? 1 : 0;
     }
 
     /**

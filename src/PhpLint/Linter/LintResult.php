@@ -40,6 +40,20 @@ class LintResult implements Countable
     }
 
     /**
+     * @return bool
+     */
+    public function containsErrors(): bool
+    {
+        foreach ($this->getViolations() as $violation) {
+            if ($violation->getSeverity() === RuleSeverity::SEVERITY_ERROR) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * @return string[]
      */
     public function getFilenames(): array
