@@ -35,7 +35,7 @@ class LintResult implements Countable
      */
     public function count()
     {
-        return count($this->violations);
+        return count($this->getViolations());
     }
 
     /**
