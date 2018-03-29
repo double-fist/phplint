@@ -5,16 +5,27 @@ namespace PhpLint\Ast;
 
 class Token
 {
+    /**
+     * @var string
+     */
     private $type;
+
+    /**
+     * @var string
+     */
     private $value;
+
+    /**
+     * @var SourceRange
+     */
     private $sourceRange;
 
     /**
-     * @param $type
-     * @param $value
-     * @param $sourceRange
+     * @param string $type
+     * @param string $value
+     * @param SourceRange $sourceRange
      */
-    public function __construct($type, $value, $sourceRange)
+    public function __construct(string $type, string $value, SourceRange $sourceRange)
     {
         $this->type = $type;
         $this->value = $value;
@@ -22,25 +33,25 @@ class Token
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getType()
+    public function getType(): string
     {
         return $this->type;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getValue()
+    public function getValue(): string
     {
         return $this->value;
     }
 
     /**
-     * @return mixed
+     * @return SourceRange
      */
-    public function getSourceRange()
+    public function getSourceRange(): SourceRange
     {
         return $this->sourceRange;
     }
