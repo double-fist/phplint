@@ -5,6 +5,8 @@ namespace PhpLint\Util;
 
 interface Comparable
 {
+    public function compare(Comparable $other): int;
+
     public function isGreaterThan(Comparable $other);
 
     public function isGreaterThanOrEquals(Comparable $other);

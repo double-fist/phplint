@@ -7,6 +7,17 @@ trait ComparableFromGreaterThan
 {
     public abstract function isGreaterThan(Comparable $other);
 
+    public function compare(Comparable $other): int
+    {
+        if ($this->isGreaterThan($other)) {
+            return 1;
+        } elseif ($this->isSmallerThan($other)) {
+            return -1;
+        }
+
+        return 0;
+    }
+
     public function isGreaterThanOrEquals(Comparable $other)
     {
         return !$other->isGreaterThan($this);
