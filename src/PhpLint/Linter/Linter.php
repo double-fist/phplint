@@ -6,6 +6,7 @@ namespace PhpLint\Linter;
 use PhpLint\Ast\NodeTraverser;
 use PhpLint\Configuration\Configuration;
 use PhpLint\Configuration\ConfigurationLoader;
+use PhpLint\Linter\Directive\DirectiveParser;
 use PhpLint\PhpParser\PhpParser;
 use PhpLint\Plugin\PluginLoader;
 
@@ -108,12 +109,20 @@ class Linter
         // TODO: Apply any inline configuration found in the source code
         $fileConfig = $config;
 
+        // Collect all inline directives (e.g. 'phplint-disable')
+        $directiveParser = new DirectiveParser($sourceContext);
+        $directives = $directiveParser->getDirectives();
+        $disableDirectives = $directiveParser->getDisableDirectives();
+
         // Run rules on all nodes of the source context
         $ruleProcessor = new RuleProcessor($fileConfig);
         $nodeTraverser = new NodeTraverser($sourceContext->getAst());
         foreach ($nodeTraverser as $node) {
             $ruleProcessor->runRules($node, $sourceContext, $lintResult);
         }
+
+        // Apply the disable directives to the result
+        $lintResult->applyDisableDirectives($sourceContext->getPath(), $disableDirectives);
 
         return $lintResult;
     }

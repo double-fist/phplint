@@ -6,6 +6,7 @@ namespace PhpLint\Linter;
 use Countable;
 use PhpLint\Ast\SourceContext;
 use PhpLint\Ast\SourceLocation;
+use PhpLint\Linter\Directive\DisableDirective;
 use PhpLint\Rules\Rule;
 use PhpLint\Rules\RuleSeverity;
 use PhpParser\Node;
@@ -98,5 +99,83 @@ class LintResult implements Countable
             $this->violations[$filename] = [];
         }
         $this->violations[$filename][] = $violation;
+    }
+
+    /**
+     * @param string|null $filename
+     * @param DisableDirective[] $disableDirectives
+     */
+    public function applyDisableDirectives($filename, array $disableDirectives)
+    {
+        if ($filename === null) {
+            $filename = '';
+        }
+        if (!isset($this->violations[$filename])) {
+            return;
+        }
+
+        // Sort the file violations by location
+        $violations = $this->violations[$filename];
+        usort(
+            $violations,
+            function (RuleViolation $lhs, RuleViolation $rhs) {
+                return $lhs->getLocation()->compare($rhs->getLocation());
+            }
+        );
+
+        $directiveIndex = 0;
+        $currentGlobalDisableDirective = null;
+        $disabledRules = [];
+        $enabledRules = [];
+
+        $filteredViolations = [];
+        foreach ($violations as $violation) {
+            while ($directiveIndex < count($disableDirectives)
+                && $disableDirectives[$directiveIndex]->getSourceLocation()->isSmallerThanOrEquals($violation->getLocation())
+            ) {
+                $directive = $disableDirectives[$directiveIndex];
+                $directiveIndex += 1;
+
+                switch ($directive->getType()) {
+                    case DisableDirective::TYPE_DISABLE:
+                        if ($directive->getRuleId() === null) {
+                            // Global disable directive
+                            $currentGlobalDisableDirective = $directive;
+                            $disabledRules = [];
+                            $enabledRules = [];
+                        } elseif ($currentGlobalDisableDirective) {
+                            $disabledRules[$directive->getRuleId()] = $directive;
+                            unset($enabledRules[$directive->getRuleId()]);
+                        } else {
+                            $disabledRules[$directive->getRuleId()] = $directive;
+                        }
+                        break;
+                    case DisableDirective::TYPE_ENABLE:
+                        if ($directive->getRuleId() === null) {
+                            // Global enable directive
+                            $currentGlobalDisableDirective = null;
+                            $disabledRules = [];
+                        } elseif ($currentGlobalDisableDirective) {
+                            unset($disabledRules[$directive->getRuleId()]);
+                            $enabledRules[$directive->getRuleId()] = true;
+                        } else {
+                            unset($disabledRules[$directive->getRuleId()]);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            if (!isset($disabledRules[$violation->getRuleName()]) && ($currentGlobalDisableDirective === null || isset($enabledRules[$violation->getRuleName()]))) {
+                $filteredViolations[] = $violation;
+            }
+        }
+
+        if (count($filteredViolations) > 0) {
+            $this->violations[$filename] = $filteredViolations;
+        } else {
+            unset($this->violations[$filename]);
+        }
     }
 }
