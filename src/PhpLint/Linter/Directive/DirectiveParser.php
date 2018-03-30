@@ -140,6 +140,7 @@ class DirectiveParser
             return null;
         }
         $directiveValue = mb_substr($content, (mb_strlen($matches[1]) + 1));
+        $directiveValue = trim(preg_replace('/--.*/', '', $directiveValue));
         $commentLocation = $commentToken->getSourceRange();
         $isSingleLineComment = !$isBlockComment || $commentLocation->getStart()->getLine() === $commentLocation->getEnd()->getLine();
         // Line disabling directives must only be used in single line comments

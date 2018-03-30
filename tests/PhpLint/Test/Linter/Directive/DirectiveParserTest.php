@@ -74,7 +74,7 @@ PROGRAM;
         // Create and parse another source context containing directive configuration
         $program = <<<PROGRAM
 <?php
-/* phplint-disable ruleA, ruleB */
+/* phplint-disable ruleA, ruleB -- This is a test, comment. */
 echo 'test';
 PROGRAM;
         $sourceContext = $this->phpParser->parse($program, 'test.php');
@@ -122,7 +122,7 @@ PROGRAM;
         $program = <<<PROGRAM
 <?php
 /*
- phplint-disable ruleA, ruleB
+ phplint-disable ruleA, ruleB -- This is a test, comment.
 */
 echo 'test';
 PROGRAM;
@@ -187,7 +187,7 @@ PROGRAM;
         // Create and parse another source context containing directive configuration
         $program = <<<PROGRAM
 <?php
-/* phplint-enable ruleA, ruleB */
+/* phplint-enable ruleA, ruleB -- This is a test, comment. */
 echo 'test';
 PROGRAM;
         $sourceContext = $this->phpParser->parse($program, 'test.php');
@@ -235,7 +235,7 @@ PROGRAM;
         $program = <<<PROGRAM
 <?php
 /*
- phplint-enable ruleA, ruleB
+ phplint-enable ruleA, ruleB -- This is a test, comment.
  */
 echo 'test';
 PROGRAM;
@@ -288,7 +288,7 @@ PROGRAM;
         // Create and parse another source context containing directive configuration
         $program = <<<PROGRAM
 <?php
-echo 'test'; // phplint-disable-line ruleA, ruleB
+echo 'test'; // phplint-disable-line ruleA, ruleB -- This is a test, comment.
 PROGRAM;
         $sourceContext = $this->phpParser->parse($program, 'test.php');
         $directiveParser = new DirectiveParser($sourceContext);
@@ -365,7 +365,7 @@ PROGRAM;
         // Create and parse another source context containing directive configuration
         $program = <<<PROGRAM
 <?php
-echo 'test'; /* phplint-disable-line ruleA, ruleB */
+echo 'test'; /* phplint-disable-line ruleA, ruleB -- This is a test, comment. */
 PROGRAM;
         $sourceContext = $this->phpParser->parse($program, 'test.php');
         $directiveParser = new DirectiveParser($sourceContext);
@@ -463,7 +463,7 @@ PROGRAM;
         // Create and parse another source context containing directive configuration
         $program = <<<PROGRAM
 <?php
-// phplint-disable-next-line ruleA, ruleB
+// phplint-disable-next-line ruleA, ruleB -- This is a test, comment.
 echo 'test';
 PROGRAM;
         $sourceContext = $this->phpParser->parse($program, 'test.php');
@@ -542,7 +542,7 @@ PROGRAM;
         // Create and parse another source context containing directive configuration
         $program = <<<PROGRAM
 <?php
-/* phplint-disable-next-line ruleA, ruleB */
+/* phplint-disable-next-line ruleA, ruleB -- This is a test, comment. */
 echo 'test';
 PROGRAM;
         $sourceContext = $this->phpParser->parse($program, 'test.php');
