@@ -30,7 +30,8 @@
         "phpunit/phpunit": "^6.5",
         "symfony/console": "^3.4",
         "symfony/filesystem": "^3.4",
-        "symfony/yaml": "^3.4"
+        "symfony/yaml": "^3.4",
+        "webmozart/glob": "^4.1"
     },
     "require-dev": {
         "viison/style-guide": "^2"
