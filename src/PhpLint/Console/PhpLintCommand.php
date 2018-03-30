@@ -55,7 +55,7 @@ class PhpLintCommand extends Command
             new InputOption(
                 self::OPTION_NAME_FORMAT,
                 'f',
-                InputOption::VALUE_OPTIONAL,
+                InputOption::VALUE_REQUIRED,
                 'Use a specific output format - default: stylish',
                 StylishLintResultFormatter::NAME
             ),
