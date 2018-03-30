@@ -36,8 +36,8 @@ class RuleProcessor
      */
     public function runRules(Node $node, SourceContext $sourceContext, LintResult $lintResult)
     {
-        foreach ($this->config->getRules() as $ruleName => $ruleConfig) {
-            $rule = $this->ruleLoader->loadRule($ruleName);
+        foreach ($this->config->getRules() as $ruleId => $ruleConfig) {
+            $rule = $this->ruleLoader->loadRule($ruleId);
             if ($rule->canValidateNode($node)) {
                 $rule->validate($node, $sourceContext, $ruleConfig, $lintResult);
             }

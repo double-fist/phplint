@@ -153,16 +153,16 @@ class Configuration
         // if the base config specifies a rule config while this config only sets the severtiy of the same rule, the
         // original config is preserved and only its severity is changed.
         $mergedRules = $baseConfig->getRules(true);
-        foreach ($this->getRules(true) as $ruleName => $ruleConfig) {
-            if (!isset($mergedRules[$ruleName])) {
+        foreach ($this->getRules(true) as $ruleId => $ruleConfig) {
+            if (!isset($mergedRules[$ruleId])) {
                 // Add new rule
-                $mergedRules[$ruleName] = $ruleConfig;
-            } elseif (is_array($mergedRules[$ruleName]) && is_string($ruleConfig)) {
+                $mergedRules[$ruleId] = $ruleConfig;
+            } elseif (is_array($mergedRules[$ruleId]) && is_string($ruleConfig)) {
                 // Only change the severity
-                $mergedRules[$ruleName][0] = $ruleConfig;
+                $mergedRules[$ruleId][0] = $ruleConfig;
             } else {
                 // Overwrite the whole rule config
-                $mergedRules[$ruleName] = $ruleConfig;
+                $mergedRules[$ruleId] = $ruleConfig;
             }
         }
         $mergedConfigData[self::KEY_RULES] = $mergedRules;

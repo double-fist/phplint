@@ -54,7 +54,7 @@ class StylishLintResultFormatter implements LintResultFormatter
                     $violation->getLocation()->__toString(),
                     $violation->getSeverity(),
                     $violation->getMessage(),
-                    $violation->getRuleName(),
+                    $violation->getRuleId(),
                 ];
             }
             if (count($tableRows) === 0) {

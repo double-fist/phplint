@@ -120,7 +120,7 @@ class ConfigurationValidator
         // Check for associative array
         if (self::isAssocArray($value)) {
             $rulesValid = true;
-            foreach ($value as $ruleName => $ruleConfig) {
+            foreach ($value as $ruleConfig) {
                 if (RuleSeverity::isRuleSeverity($ruleConfig) || self::isSequentialArray($ruleConfig) && count($ruleConfig) > 0 && RuleSeverity::isRuleSeverity($ruleConfig[0])) {
                     continue;
                 }

@@ -32,15 +32,15 @@ class LintException extends Exception
     }
 
     /**
-     * @param string $ruleName
+     * @param string $ruleId
      * @param mixed $severity
      * @return LintException
      */
-    public static function invalidRuleSeverityReported(string $ruleName, $severity): LintException
+    public static function invalidRuleSeverityReported(string $ruleId, $severity): LintException
     {
         return new self(sprintf(
             'The violation reported by rule "%s" used an invalid severity "%s".',
-            $ruleName,
+            $ruleId,
             $severity
         ));
     }

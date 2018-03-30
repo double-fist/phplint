@@ -15,7 +15,7 @@ class RuleViolation
     /**
      * @var string
      */
-    protected $ruleName;
+    protected $ruleId;
 
     /**
      * @var string
@@ -29,14 +29,14 @@ class RuleViolation
 
     /**
      * @param SourceLocation $location
-     * @param string $ruleName
+     * @param string $ruleId
      * @param string $severity
      * @param string $message
      */
-    public function __construct(SourceLocation $location, string $ruleName, string $severity, string $message)
+    public function __construct(SourceLocation $location, string $ruleId, string $severity, string $message)
     {
         $this->location = $location;
-        $this->ruleName = $ruleName;
+        $this->ruleId = $ruleId;
         $this->severity = $severity;
         $this->message = $message;
     }
@@ -52,9 +52,9 @@ class RuleViolation
     /**
      * @return string
      */
-    public function getRuleName(): string
+    public function getRuleId(): string
     {
-        return $this->ruleName;
+        return $this->ruleId;
     }
 
     /**

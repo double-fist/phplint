@@ -33,14 +33,14 @@ abstract class AbstractRulesPlugin implements RulesPlugin
     /**
      * @inheritdoc
      */
-    abstract public function loadRule(string $ruleName): Rule;
+    abstract public function loadRule(string $ruleId): Rule;
 
     /**
      * @inheritdoc
      */
-    public function hasRule(string $ruleName): bool
+    public function hasRule(string $ruleId): bool
     {
-        return in_array($ruleName, array_keys($this->getRules()));
+        return in_array($ruleId, array_keys($this->getRules()));
     }
 
     /**

@@ -25,14 +25,14 @@ interface RulesPlugin extends Plugin
     public function getRules(): array;
 
     /**
-     * @param string $ruleName
+     * @param string $ruleId
      * @return bool
      */
-    public function hasRule(string $ruleName): bool;
+    public function hasRule(string $ruleId): bool;
 
     /**
-     * @param string $ruleName
+     * @param string $ruleId
      * @return Rule
      */
-    public function loadRule(string $ruleName): Rule;
+    public function loadRule(string $ruleId): Rule;
 }

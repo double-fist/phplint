@@ -26,45 +26,45 @@ class RuleLoader
     }
 
     /**
-     * @param string $ruleName
+     * @param string $ruleId
      * @return Rule
-     * @throws RuleException if the rule with the given $ruleName cannot not be found.
+     * @throws RuleException if the rule with the given $ruleId cannot not be found.
      */
-    public function loadRule(string $ruleName): Rule
+    public function loadRule(string $ruleId): Rule
     {
-        $lowercaseRuleName = mb_strtolower($ruleName);
-        if (isset($this->loadedRules[$lowercaseRuleName])) {
-            return $this->loadedRules[$lowercaseRuleName];
+        $lowercaseRuleId = mb_strtolower($ruleId);
+        if (isset($this->loadedRules[$lowercaseRuleId])) {
+            return $this->loadedRules[$lowercaseRuleId];
         }
 
         // Try to load the rule from the a configured plugin
         $rulePlugins = $this->config->getPlugins();
         foreach ($rulePlugins as $plugin) {
-            if ($plugin->hasRule($ruleName)) {
-                $this->loadedRules[$lowercaseRuleName] = $plugin->loadRule($ruleName);
+            if ($plugin->hasRule($ruleId)) {
+                $this->loadedRules[$lowercaseRuleId] = $plugin->loadRule($ruleId);
 
-                return $this->loadedRules[$lowercaseRuleName];
+                return $this->loadedRules[$lowercaseRuleId];
             }
         }
 
         // Try to load the rule from the default set
-        $className = __NAMESPACE__ . '\\' . self::convertRuleNameToClassName($ruleName);
+        $className = __NAMESPACE__ . '\\' . self::convertRuleIdToClassName($ruleId);
         if (!class_exists($className)) {
-            throw RuleException::ruleNotFound($ruleName);
+            throw RuleException::ruleNotFound($ruleId);
         }
-        $this->loadedRules[$lowercaseRuleName] = new $className();
+        $this->loadedRules[$lowercaseRuleId] = new $className();
 
-        return $this->loadedRules[$lowercaseRuleName];
+        return $this->loadedRules[$lowercaseRuleId];
     }
 
     /**
-     * @param string $ruleName
+     * @param string $ruleId
      * @return string
      */
-    public static function convertRuleNameToClassName(string $ruleName): string
+    public static function convertRuleIdToClassName(string $ruleId): string
     {
         $parts = [];
-        preg_match_all('/[A-Za-z0-9]+/', $ruleName, $parts);
+        preg_match_all('/[A-Za-z0-9]+/', $ruleId, $parts);
         $parts = array_map('mb_strtolower', $parts[0]);
         $parts = array_map('ucfirst', $parts);
 

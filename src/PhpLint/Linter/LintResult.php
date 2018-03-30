@@ -181,7 +181,7 @@ class LintResult implements Countable
                 }
             }
 
-            if (!isset($disabledRules[$violation->getRuleName()]) && ($currentGlobalDisableDirective === null || isset($enabledRules[$violation->getRuleName()]))) {
+            if (!isset($disabledRules[$violation->getRuleId()]) && ($currentGlobalDisableDirective === null || isset($enabledRules[$violation->getRuleId()]))) {
                 $filteredViolations[] = $violation;
             }
         }
