@@ -16,15 +16,21 @@ use PhpLint\Console\Formatter\FormatterFactory;
 use PhpLint\Console\Formatter\StylishLintResultFormatter;
 use PhpLint\Linter\Linter;
 use PhpLint\Linter\LintResult;
+use PhpLint\Util\IgnoreFileParser;
 use RecursiveCallbackFilterIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
+use Webmozart\Glob\Glob;
 
 class PhpLintCommand extends Command
 {
     const ARG_NAME_LINT_PATH = 'lint-path';
     const OPTION_NAME_ERRORS_ONLY = 'errors-only';
     const OPTION_NAME_FORMAT = 'format';
+
+    const DEFAULT_IGNORE_PATTERNS = [
+        '/vendor/*',
+    ];
 
     /**
      * @inheritdoc
@@ -61,7 +67,7 @@ class PhpLintCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        // Find all files at the given path
+        // Find all files at the given path that are not ignores
         $lintPath = $input->getArgument(self::ARG_NAME_LINT_PATH);
         $lintPath = $this->normalizeLintPath($lintPath);
         $phpFilePaths = $this->findPhpFiles($lintPath);
@@ -129,11 +135,28 @@ class PhpLintCommand extends Command
             return [$path];
         }
 
-        // Create a directory iterator for finding all PHP files
+        // Get all ignore patterns for the given path and inverse their order. That way we can just use the first
+        // matching pattern to decide whethe to ignore or keep the file.
+        $absoluteIgnorePatterns = array_reverse($this->getIgnorePatterns($path));
+
+        // Create a directory iterator for finding all PHP files that are not ignored by any pattern
         $directoryIterator = new RecursiveDirectoryIterator($path);
         $filterIterator = new RecursiveCallbackFilterIterator(
             $directoryIterator,
-            function ($current, $key, $iterator) {
+            function ($current, $key, $iterator) use ($absoluteIgnorePatterns) {
+                // Test all ignore patterns on the path to support including rules defined after a matching
+                // excluding rule
+                $ignoreFile = false;
+                foreach ($absoluteIgnorePatterns as $absolutePattern => $isIncluding) {
+                    if (Glob::match($current->getPathname(), $absolutePattern)) {
+                        $ignoreFile = !$isIncluding;
+                        break;
+                    }
+                }
+                if ($ignoreFile) {
+                    return false;
+                }
+
                 // Allow recursion
                 if ($iterator->hasChildren()) {
                     return true;
@@ -151,5 +174,31 @@ class PhpLintCommand extends Command
         sort($phpFilePaths);
 
         return $phpFilePaths;
+    }
+
+    /**
+     * @param string $lintPath
+     * @return string[]
+     */
+    private function getIgnorePatterns(string $lintPath): array
+    {
+        // Check the current working directory for a .phplintignore file
+        $workingDir = getcwd();
+        $ignoreFileParser = new IgnoreFileParser();
+        $ignorePatterns = array_merge(
+            self::DEFAULT_IGNORE_PATTERNS,
+            $ignoreFileParser->readIgnorePatterns($workingDir)
+        );
+
+        // Determine whether the patterns exclude or include ('!') the matching files and prefix them with the current
+        // working directory, because the used glob lib only supports absolute paths
+        $absoluteIgnorePatterns = [];
+        foreach ($ignorePatterns as $pattern) {
+            $isIncluding = mb_substr($pattern, 0, 1) === '!';
+            $absolutePattern = $workingDir . '/' . ltrim($pattern, '/!');
+            $absoluteIgnorePatterns[$absolutePattern] = $isIncluding;
+        }
+
+        return $absoluteIgnorePatterns;
     }
 }
