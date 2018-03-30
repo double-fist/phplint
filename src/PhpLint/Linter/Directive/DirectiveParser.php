@@ -90,7 +90,7 @@ class DirectiveParser
                             $directive->getType(),
                             SourceLocation::atLineAndColumn(
                                 $directive->getSourceLocation()->getLine(),
-                                $directive->getSourceLocation()->getColumn() + 1
+                                $directive->getSourceLocation()->getColumn()
                             ),
                             $ruleId
                         );
