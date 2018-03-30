@@ -141,9 +141,10 @@ class DirectiveParser
         }
         $directiveValue = mb_substr($content, (mb_strlen($matches[1]) + 1));
         $directiveValue = trim(preg_replace('/--.*/', '', $directiveValue));
+
+        // Line disabling directives must only be used in single line comments
         $commentLocation = $commentToken->getSourceRange();
         $isSingleLineComment = !$isBlockComment || $commentLocation->getStart()->getLine() === $commentLocation->getEnd()->getLine();
-        // Line disabling directives must only be used in single line comments
         if ($isSingleLineComment && preg_match('/^phplint-disable-(next-)?line$/', $matches[1]) === 1) {
             return new Directive(
                 mb_substr($matches[1], mb_strlen('phplint-')),
