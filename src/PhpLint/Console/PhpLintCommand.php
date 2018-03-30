@@ -27,6 +27,7 @@ class PhpLintCommand extends Command
     const ARG_NAME_LINT_PATH = 'lint-path';
     const OPTION_NAME_ERRORS_ONLY = 'errors-only';
     const OPTION_NAME_FORMAT = 'format';
+    const OPTION_NAME_IGNORE_PATTERN = 'ignore-pattern';
 
     const DEFAULT_IGNORE_PATTERNS = [
         '/vendor/*',
@@ -58,6 +59,13 @@ class PhpLintCommand extends Command
                 'Use a specific output format - default: stylish',
                 StylishLintResultFormatter::NAME
             ),
+            new InputOption(
+                self::OPTION_NAME_IGNORE_PATTERN,
+                null,
+                InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
+                'Pattern of files to ignore (in addition to those in .phplintignore)',
+                []
+            ),
         ]);
         $this->setDescription('Lints the file(s) at the specified path');
     }
@@ -70,7 +78,8 @@ class PhpLintCommand extends Command
         // Find all files at the given path that are not ignores
         $lintPath = $input->getArgument(self::ARG_NAME_LINT_PATH);
         $lintPath = $this->normalizeLintPath($lintPath);
-        $phpFilePaths = $this->findPhpFiles($lintPath);
+        $ignorePatterns = $this->getIgnorePatterns($input->getOption(self::OPTION_NAME_IGNORE_PATTERN));
+        $phpFilePaths = $this->findPhpFiles($lintPath, $ignorePatterns);
         if (count($phpFilePaths) === 0) {
             $output->writeln('Nothing to lint at path' . $lintPath);
 
@@ -127,27 +136,28 @@ class PhpLintCommand extends Command
 
     /**
      * @param string $path
+     * @param string[] $ignorePatterns
      * @param string[]
      */
-    private function findPhpFiles(string $path): array
+    private function findPhpFiles(string $path, array $ignorePatterns): array
     {
         if (is_file($path)) {
             return [$path];
         }
 
-        // Get all ignore patterns for the given path and inverse their order. That way we can just use the first
-        // matching pattern to decide whethe to ignore or keep the file.
-        $absoluteIgnorePatterns = array_reverse($this->getIgnorePatterns($path));
+        // Revert the order of the ignore patterns. That way we can just use the first matching pattern to decide
+        // whether to ignore or keep a file.
+        $reversedIgnorePatterns = array_reverse($ignorePatterns);
 
         // Create a directory iterator for finding all PHP files that are not ignored by any pattern
         $directoryIterator = new RecursiveDirectoryIterator($path);
         $filterIterator = new RecursiveCallbackFilterIterator(
             $directoryIterator,
-            function ($current, $key, $iterator) use ($absoluteIgnorePatterns) {
+            function ($current, $key, $iterator) use ($reversedIgnorePatterns) {
                 // Test all ignore patterns on the path to support including rules defined after a matching
                 // excluding rule
                 $ignoreFile = false;
-                foreach ($absoluteIgnorePatterns as $absolutePattern => $isIncluding) {
+                foreach ($reversedIgnorePatterns as $absolutePattern => $isIncluding) {
                     if (Glob::match($current->getPathname(), $absolutePattern)) {
                         $ignoreFile = !$isIncluding;
                         break;
@@ -177,21 +187,26 @@ class PhpLintCommand extends Command
     }
 
     /**
-     * @param string $lintPath
+     * @param string[] $cliIgnorePatterns
      * @return string[]
      */
-    private function getIgnorePatterns(string $lintPath): array
+    private function getIgnorePatterns(array $cliIgnorePatterns): array
     {
         // Check the current working directory for a .phplintignore file
         $workingDir = getcwd();
         $ignoreFileParser = new IgnoreFileParser();
+        $fileIgnorePatterns = $ignoreFileParser->readIgnorePatterns($workingDir);
+
+        // Combine the ignore patterns in the order 'default', 'file', 'cli'
         $ignorePatterns = array_merge(
             self::DEFAULT_IGNORE_PATTERNS,
-            $ignoreFileParser->readIgnorePatterns($workingDir)
+            $fileIgnorePatterns,
+            $cliIgnorePatterns
         );
 
         // Determine whether the patterns exclude or include ('!') the matching files and prefix them with the current
-        // working directory, because the used glob lib only supports absolute paths
+        // working directory, because the used glob lib only supports absolute paths. Using the glob as key already
+        // eliminates duplicates of exact same patterns.
         $absoluteIgnorePatterns = [];
         foreach ($ignorePatterns as $pattern) {
             $isIncluding = mb_substr($pattern, 0, 1) === '!';
