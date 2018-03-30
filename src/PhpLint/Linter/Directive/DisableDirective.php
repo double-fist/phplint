@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace PhpLint\Linter\Directive;
 
-use PhpLint\Ast\SourceLocation;
-
 class DisableDirective extends Directive
 {
     const TYPE_DISABLE = 'disable';
