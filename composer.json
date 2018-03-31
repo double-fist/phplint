@@ -38,7 +38,8 @@
     },
     "autoload": {
         "psr-4": {
-            "PhpLint\\": "src/PhpLint"
+            "PhpLint\\": "src/PhpLint",
+            "PhpLint\\TestHelpers\\Rules\\": "tests/PhpLint/TestHelpers/Rules"
         }
     },
     "autoload-dev": {
