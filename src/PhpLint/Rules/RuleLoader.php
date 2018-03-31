@@ -48,7 +48,7 @@ class RuleLoader
         }
 
         // Try to load the rule from the default set
-        $className = __NAMESPACE__ . '\\' . self::convertRuleIdToClassName($ruleId);
+        $className = __NAMESPACE__ . '\\' . self::createClassNameForRuleId($ruleId);
         if (!class_exists($className)) {
             throw RuleException::ruleNotFound($ruleId);
         }
@@ -61,13 +61,8 @@ class RuleLoader
      * @param string $ruleId
      * @return string
      */
-    public static function convertRuleIdToClassName(string $ruleId): string
+    public static function createClassNameForRuleId(string $ruleId): string
     {
-        $parts = [];
-        preg_match_all('/[A-Za-z0-9]+/', $ruleId, $parts);
-        $parts = array_map('mb_strtolower', $parts[0]);
-        $parts = array_map('ucfirst', $parts);
-
-        return implode('', $parts) . 'Rule';
+        return implode('', array_map('ucfirst', array_map('mb_strtolower', explode('-', $ruleId)))) . 'Rule';
     }
 }
