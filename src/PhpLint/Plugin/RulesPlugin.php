@@ -20,11 +20,6 @@ interface RulesPlugin extends Plugin
     public function getPlugins(): array;
 
     /**
-     * @return string[]
-     */
-    public function getRules(): array;
-
-    /**
      * @param string $ruleId
      * @return bool
      */

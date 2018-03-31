@@ -28,11 +28,6 @@ abstract class AbstractRulesPlugin implements RulesPlugin
     /**
      * @inheritdoc
      */
-    abstract public function getRules(): array;
-
-    /**
-     * @inheritdoc
-     */
     abstract public function hasRule(string $ruleId): bool;
 
     /**
@@ -55,7 +50,6 @@ abstract class AbstractRulesPlugin implements RulesPlugin
     {
         return [
             Configuration::KEY_PLUGINS => $this->getPlugins(),
-            Configuration::KEY_RULES => $this->getRules(),
         ];
     }
 }
