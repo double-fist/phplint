@@ -71,7 +71,10 @@ class LintResult implements Countable
         SourceLocation $location
     ) {
         if (!RuleSeverity::isRuleSeverity($rule->getSeverity())) {
-            throw LintException::invalidRuleSeverityReported($rule->getName(), $rule->getSeverity());
+            throw LintException::invalidRuleSeverityReported(
+                $rule->getDescription()->getIdentifier(),
+                $rule->getSeverity()
+            );
         }
 
         // Filter out warnings, if only errors should be collected
@@ -82,7 +85,7 @@ class LintResult implements Countable
 
         $this->violations[] = new RuleViolation(
             $location,
-            $rule->getName(),
+            $rule->getDescription()->getIdentifier(),
             $rule->getSeverity(),
             $message
         );
