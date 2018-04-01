@@ -95,4 +95,38 @@ class ParserContext implements SourceContext
 
         return SourceRange::spanningRanges($startToken->getSourceRange(), $endToken->getSourceRange());
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function findPrecedingNonWhitespaceToken(int $currentIndex)
+    {
+        $nextIndex = $currentIndex - 1;
+        while ($nextIndex < count($this->getTokens()) && $nextIndex >= 0) {
+            $nextToken = $this->getTokens()[$nextIndex];
+            if ($nextToken->getType() !== 'T_WHITESPACE') {
+                return $nextToken;
+            }
+            $nextIndex -= 1;
+        }
+
+        return null;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function findSucceedingNonWhitespaceToken(int $currentIndex)
+    {
+        $nextIndex = $currentIndex + 1;
+        while ($nextIndex < count($this->getTokens())) {
+            $nextToken = $this->getTokens()[$nextIndex];
+            if ($nextToken->getType() !== 'T_WHITESPACE') {
+                return $nextToken;
+            }
+            $nextIndex += 1;
+        }
+
+        return null;
+    }
 }
