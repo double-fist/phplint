@@ -41,7 +41,6 @@ class RuleFixAssertion extends AbstractRuleAssertion
 
         $this->validateRule($sourceContext, $lintResult);
         Assert::assertNotEmpty($lintResult->getViolations(), $assertionMessage);
-        $this->assertLintResult($lintResult);
 
         // TODO: Apply the proposed fixes and assert the results
         $expectedSourceContext = $this->getParser()->parse($this->fixedCode);

@@ -8,7 +8,6 @@ use PhpLint\Ast\NodeTraverser;
 use PhpLint\Ast\SourceContext;
 use PhpLint\PhpParser\ParserContext;
 use PhpLint\Linter\LintResult;
-use PhpLint\Linter\RuleViolation;
 use PhpLint\PhpParser\PhpParser;
 use PhpLint\Rules\Rule;
 use PhpLint\Rules\RuleSeverity;
@@ -96,34 +95,6 @@ abstract class AbstractRuleAssertion
             if ($this->getRule()->canValidateNode($node)) {
                 $this->getRule()->validate($node, $sourceContext, RuleSeverity::SEVERITY_ERROR, $lintResult);
             }
-        }
-    }
-
-    /**
-     * Asserts that all message IDs contained in the given $lintResult are defined in the rule's description.
-     *
-     * @param LintResult $lintResult
-     */
-    protected function assertLintResult(LintResult $lintResult)
-    {
-        $definedMessages = $this->getRule()->getDescription()->getMessages();
-        $usedMessages = array_map(
-            function (RuleViolation $violation) {
-                return $violation->getMessage();
-            },
-            $lintResult->getViolations()
-        );
-
-        foreach ($usedMessages as $message) {
-            Assert::assertContains(
-                $message,
-                $definedMessages,
-                sprintf(
-                    'Failed asserting that the message ID "%s" used by rule "%s" to report a violation is known to that rule.',
-                    $message,
-                    $this->getRule()->getDescription()->getIdentifier()
-                )
-            );
         }
     }
 

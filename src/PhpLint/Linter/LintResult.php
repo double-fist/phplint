@@ -79,7 +79,7 @@ class LintResult implements Countable
     /**
      * @param Rule $rule
      * @param string|int $severity
-     * @param string $messageId
+     * @param string $message
      * @param SourceLocation $location
      * @param SourceContext $context
      * @throws LintException if the passed $severity is invalid.
@@ -87,7 +87,7 @@ class LintResult implements Countable
     public function reportViolation(
         Rule $rule,
         $severity,
-        string $messageId,
+        string $message,
         SourceLocation $location,
         SourceContext $context
     ) {
@@ -105,7 +105,7 @@ class LintResult implements Countable
             $location,
             $rule->getName(),
             RuleSeverity::getRuleSeverity($severity, true),
-            $rule->getDescription()->getMessage($messageId)
+            $message
         );
 
         $filename = $context->getPath() ?? '';

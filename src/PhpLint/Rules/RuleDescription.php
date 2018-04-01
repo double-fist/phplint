@@ -21,11 +21,6 @@ class RuleDescription
     protected $schema = null;
 
     /**
-     * @var array
-     */
-    protected $messages = [];
-
-    /**
      * @var string[]
      */
     protected $rejectedExamples = [];
@@ -75,17 +70,6 @@ class RuleDescription
     public function configurableFollowingSchema(RuleConfigurationSchema $schema): RuleDescription
     {
         $this->schema = $schema;
-
-        return $this;
-    }
-
-    /**
-     * @param array $messages
-     * @return RuleDescription
-     */
-    public function usingMessages(array $messages): RuleDescription
-    {
-        $this->messages = $messages;
 
         return $this;
     }
@@ -145,23 +129,6 @@ class RuleDescription
     public function getSchema()
     {
         return $this->schema;
-    }
-
-    /**
-     * @return array
-     */
-    public function getMessages(): array
-    {
-        return $this->messages;
-    }
-
-    /**
-     * @param string $messageId
-     * @return string
-     */
-    public function getMessage(string $messageId): string
-    {
-        return $this->messages[$messageId];
     }
 
     /**
