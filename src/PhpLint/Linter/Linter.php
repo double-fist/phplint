@@ -39,36 +39,37 @@ class Linter
      *
      * @param string[] $filePaths
      * @param Configuration $extraConfig
-     * @param LintResult|null $lintResult,
-     * @return LintResult
+     * @param bool $errorsOnly
+     * @return LintResultCollection
      */
     public function lintFilesAtPaths(
         array $filePaths,
         Configuration $extraConfig,
-        LintResult $lintResult = null
-    ): LintResult {
+        bool $errorsOnly = false
+    ): LintResultCollection {
+        $lintResult = new LintResultCollection();
         $fileTraverser = new FileTraverser($filePaths, $this->configLoader, $extraConfig);
         foreach ($fileTraverser as $filePath) {
-            $this->lintFileAtPath($filePath, $fileTraverser->getCurrentFileConfig(), $lintResult);
+            $fileResult = $this->lintFileAtPath($filePath, $fileTraverser->getCurrentFileConfig(), $errorsOnly);
+            $lintResult->addResult($filePath, $fileResult);
         }
 
         return $lintResult;
     }
 
     /**
-     * Lints the file at the given $filePath and returns the result. If a $lintResult is passed, that instance is used
-     * to collect the found violations.
+     * Lints the file at the given $filePath and returns the result.
      *
      * @param string $filePath
      * @param Configuration $config
-     * @param LintResult|null $lintResult
+     * @param bool $errorsOnly
      * @return LintResult
      * @throws LintException if the given $filePath does not point to a readable PHP file.
      */
     public function lintFileAtPath(
         string $filePath,
         Configuration $config,
-        LintResult $lintResult = null
+        bool $errorsOnly = false
     ): LintResult {
         // Check that path points to a PHP file
         if (!is_file($filePath) || pathinfo($filePath)['extension'] !== 'php') {
@@ -80,29 +81,24 @@ class Linter
             throw LintException::failedToReadFile($filePath);
         }
 
-        return $this->lintCode($sourceCode, $config, $lintResult, $filePath);
+        return $this->lintCode($sourceCode, $config, $filePath, $errorsOnly);
     }
 
     /**
-     * Lints the given $sourceCode and returns the result. If a $lintResult is passed, that instance is used to collect
-     * the found violations.
+     * Lints the given $sourceCode and returns the result.
      *
      * @param string $sourceCode
      * @param Configuration $config
-     * @param LintResult|null $lintResult
      * @param string|null $filePath
+     * @param bool $errorsOnly
      * @return LintResult
      */
     public function lintCode(
         string $sourceCode,
         Configuration $config,
-        LintResult $lintResult = null,
-        string $filePath = null
+        string $filePath = null,
+        bool $errorsOnly = false
     ): LintResult {
-        if (!$lintResult) {
-            $lintResult = new LintResult();
-        }
-
         // Parse source code
         $sourceContext = $this->parser->parse($sourceCode, $filePath);
 
@@ -115,6 +111,7 @@ class Linter
         $disableDirectives = $directiveParser->getDisableDirectives();
 
         // Run rules on all nodes of the source context
+        $lintResult = new LintResult($errorsOnly);
         $ruleProcessor = new RuleProcessor($fileConfig);
         $nodeTraverser = new NodeTraverser($sourceContext->getAst());
         foreach ($nodeTraverser as $node) {
@@ -122,7 +119,7 @@ class Linter
         }
 
         // Apply the disable directives to the result
-        $lintResult->applyDisableDirectives($sourceContext->getPath(), $disableDirectives);
+        $lintResult->applyDisableDirectives($disableDirectives);
 
         return $lintResult;
     }

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace PhpLint\Console\Formatter;
 
-use PhpLint\Linter\LintResult;
+use PhpLint\Linter\LintResultCollection;
 use PhpLint\Rules\RuleSeverity;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -15,7 +15,7 @@ class StylishLintResultFormatter implements LintResultFormatter
     /**
      * @inheritdoc
      */
-    public function formatResult(LintResult $lintResult, OutputInterface $output)
+    public function formatResult(LintResultCollection $lintResult, OutputInterface $output)
     {
         if (count($lintResult) === 0) {
             return;
@@ -46,10 +46,10 @@ class StylishLintResultFormatter implements LintResultFormatter
         $errorCount = 0;
         $warningCount = 0;
         $summaryColor = 'yellow';
-        foreach ($lintResult->getFilenames() as $filename) {
+        foreach ($lintResult->getFilePaths() as $filePath) {
             // Collect the table rows
             $tableRows = [];
-            foreach ($lintResult->getViolations($filename) as $violation) {
+            foreach ($lintResult->getResult($filePath)->getViolations() as $violation) {
                 $tableRows[] = [
                     $violation->getLocation()->__toString(),
                     $violation->getSeverity(),
@@ -62,7 +62,7 @@ class StylishLintResultFormatter implements LintResultFormatter
             }
 
             // Print the formatted row values
-            $output->writeln('<lint_result-stylish-filename>' . $filename . '</lint_result-stylish-filename>');
+            $output->writeln('<lint_result-stylish-filename>' . $filePath . '</lint_result-stylish-filename>');
             foreach (self::formatTableData($tableRows) as $row) {
                 $output->write('  <lint_result-stylish-default>' . $row[0] . '</lint_result-stylish-default>');
                 if (trim($row[1]) === RuleSeverity::SEVERITY_ERROR) {

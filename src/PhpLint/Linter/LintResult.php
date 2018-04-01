@@ -4,12 +4,10 @@ declare(strict_types=1);
 namespace PhpLint\Linter;
 
 use Countable;
-use PhpLint\Ast\SourceContext;
 use PhpLint\Ast\SourceLocation;
 use PhpLint\Linter\Directive\DisableDirective;
 use PhpLint\Rules\Rule;
 use PhpLint\Rules\RuleSeverity;
-use PhpParser\Node;
 
 class LintResult implements Countable
 {
@@ -36,7 +34,7 @@ class LintResult implements Countable
      */
     public function count()
     {
-        return count($this->getViolations());
+        return count($this->violations);
     }
 
     /**
@@ -44,7 +42,7 @@ class LintResult implements Countable
      */
     public function containsErrors(): bool
     {
-        foreach ($this->getViolations() as $violation) {
+        foreach ($this->violations as $violation) {
             if ($violation->getSeverity() === RuleSeverity::SEVERITY_ERROR) {
                 return true;
             }
@@ -54,40 +52,23 @@ class LintResult implements Countable
     }
 
     /**
-     * @return string[]
-     */
-    public function getFilenames(): array
-    {
-        return array_keys($this->violations);
-    }
-
-    /**
-     * @param string $filename
      * @return RuleViolation[]
      */
-    public function getViolations(string $filename = null): array
+    public function getViolations(): array
     {
-        if ($filename !== null) {
-            return $this->violations[$filename];
-        } elseif (count($this->violations) > 0) {
-            return array_merge(...array_values($this->violations));
-        } else {
-            return [];
-        }
+        return $this->violations;
     }
 
     /**
      * @param Rule $rule
      * @param string $message
      * @param SourceLocation $location
-     * @param SourceContext $context
      * @throws LintException if the $rule's severity is invalid.
      */
     public function reportViolation(
         Rule $rule,
         string $message,
-        SourceLocation $location,
-        SourceContext $context
+        SourceLocation $location
     ) {
         if (!RuleSeverity::isRuleSeverity($rule->getSeverity())) {
             throw LintException::invalidRuleSeverityReported($rule->getName(), $rule->getSeverity());
@@ -99,37 +80,22 @@ class LintResult implements Countable
             return;
         }
 
-        $violation = new RuleViolation(
+        $this->violations[] = new RuleViolation(
             $location,
             $rule->getName(),
             $rule->getSeverity(),
             $message
         );
-
-        $filename = $context->getPath() ?? '';
-        if (!isset($this->violations[$filename])) {
-            $this->violations[$filename] = [];
-        }
-        $this->violations[$filename][] = $violation;
     }
 
     /**
-     * @param string|null $filename
      * @param DisableDirective[] $disableDirectives
      */
-    public function applyDisableDirectives($filename, array $disableDirectives)
+    public function applyDisableDirectives(array $disableDirectives)
     {
-        if ($filename === null) {
-            $filename = '';
-        }
-        if (!isset($this->violations[$filename])) {
-            return;
-        }
-
-        // Sort the file violations by location
-        $violations = $this->violations[$filename];
+        // Sort the violations by location
         usort(
-            $violations,
+            $this->violations,
             function (RuleViolation $lhs, RuleViolation $rhs) {
                 return $lhs->getLocation()->compare($rhs->getLocation());
             }
@@ -141,7 +107,7 @@ class LintResult implements Countable
         $enabledRules = [];
 
         $filteredViolations = [];
-        foreach ($violations as $violation) {
+        foreach ($this->violations as $violation) {
             while ($directiveIndex < count($disableDirectives)
                 && $disableDirectives[$directiveIndex]->getSourceLocation()->isSmallerThanOrEquals($violation->getLocation())
             ) {
@@ -184,10 +150,6 @@ class LintResult implements Countable
             }
         }
 
-        if (count($filteredViolations) > 0) {
-            $this->violations[$filename] = $filteredViolations;
-        } else {
-            unset($this->violations[$filename]);
-        }
+        $this->violations = $filteredViolations;
     }
 }

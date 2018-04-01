@@ -89,10 +89,6 @@ class PhpLintCommand extends Command
         // TODO: Create config from the CLI options
         $config = new Configuration([]);
 
-        // Prepare lint result, respecting the passed options
-        $errorsOnly = $input->getOption(self::OPTION_NAME_ERRORS_ONLY);
-        $lintResult = new LintResult($errorsOnly);
-
         // Prepare the result formatter
         $formatterFactory = new FormatterFactory();
         $outputFormat = $input->getOption(self::OPTION_NAME_FORMAT);
@@ -100,7 +96,8 @@ class PhpLintCommand extends Command
 
         // Lint all PHP files found in the path
         $linter = new Linter();
-        $lintResult = $linter->lintFilesAtPaths($phpFilePaths, $config, $lintResult);
+        $errorsOnly = $input->getOption(self::OPTION_NAME_ERRORS_ONLY);
+        $lintResult = $linter->lintFilesAtPaths($phpFilePaths, $config, $errorsOnly);
 
         // Format the result
         $resultFormatter->formatResult($lintResult, $output);
