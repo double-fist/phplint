@@ -69,8 +69,7 @@ class ParserContext implements SourceContext
     }
 
     /**
-     * @param Node $node
-     * @return SourceRange
+     * @inheritdoc
      */
     public function getSourceRangeOfNode(Node $node): SourceRange
     {
