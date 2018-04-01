@@ -78,33 +78,31 @@ class LintResult implements Countable
 
     /**
      * @param Rule $rule
-     * @param string|int $severity
      * @param string $message
      * @param SourceLocation $location
      * @param SourceContext $context
-     * @throws LintException if the passed $severity is invalid.
+     * @throws LintException if the $rule's severity is invalid.
      */
     public function reportViolation(
         Rule $rule,
-        $severity,
         string $message,
         SourceLocation $location,
         SourceContext $context
     ) {
-        if (!RuleSeverity::isRuleSeverity($severity)) {
-            throw LintException::invalidRuleSeverityReported($rule->getName(), $severity);
+        if (!RuleSeverity::isRuleSeverity($rule->getSeverity())) {
+            throw LintException::invalidRuleSeverityReported($rule->getName(), $rule->getSeverity());
         }
 
         // Filter out warnings, if only errors should be collected
         $errorSeverityCode = array_search(RuleSeverity::SEVERITY_ERROR, RuleSeverity::ALL_SEVERITIES);
-        if ($this->errorsOnly && RuleSeverity::getRuleSeverity($severity) < $errorSeverityCode) {
+        if ($this->errorsOnly && RuleSeverity::getRuleSeverity($rule->getSeverity()) < $errorSeverityCode) {
             return;
         }
 
         $violation = new RuleViolation(
             $location,
             $rule->getName(),
-            RuleSeverity::getRuleSeverity($severity, true),
+            $rule->getSeverity(),
             $message
         );
 
