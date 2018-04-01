@@ -20,6 +20,18 @@ class RuleException extends Exception
     }
 
     /**
+     * @param string $value
+     * @return RuleException
+     */
+    public static function invalidSeverity(string $value): RuleException
+    {
+        throw new self(sprintf(
+            'The value "%s" is not a valid rule severity level.',
+            $value
+        ));
+    }
+
+    /**
      * @param string $ruleId
      * @param string $givenNodeType
      * @param string[] $expectedNodeTypes

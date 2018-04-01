@@ -20,6 +20,16 @@ interface Rule
     public function setDescription(RuleDescription $description);
 
     /**
+     * @param string
+     */
+    public function getSeverity(): string;
+
+    /**
+     * @param string|array $config
+     */
+    public function configure($config);
+
+    /**
      * @return string[]
      */
     public function getTypes(): array;
@@ -33,8 +43,7 @@ interface Rule
     /**
      * @param Node $node
      * @param SourceContext $context
-     * @param string|array $ruleConfig
      * @param LintResult $result
      */
-    public function validate(Node $node, SourceContext $context, $ruleConfig, LintResult $result);
+    public function validate(Node $node, SourceContext $context, LintResult $result);
 }

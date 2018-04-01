@@ -10,7 +10,6 @@ use PhpLint\PhpParser\ParserContext;
 use PhpLint\Linter\LintResult;
 use PhpLint\PhpParser\PhpParser;
 use PhpLint\Rules\Rule;
-use PhpLint\Rules\RuleSeverity;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\ExpectationFailedException;
 
@@ -93,7 +92,7 @@ abstract class AbstractRuleAssertion
         $nodeTraverser = new NodeTraverser($sourceContext->getAst());
         foreach ($nodeTraverser as $node) {
             if ($this->getRule()->canValidateNode($node)) {
-                $this->getRule()->validate($node, $sourceContext, RuleSeverity::SEVERITY_ERROR, $lintResult);
+                $this->getRule()->validate($node, $sourceContext, $lintResult);
             }
         }
     }

@@ -27,6 +27,17 @@ class RuleProcessor
     {
         $this->config = $config;
         $this->ruleLoader = new RuleLoader($config);
+        $this->configureRules();
+    }
+
+    /**
+     * Loads all rules defined in the configuration and configures them accordingly.
+     */
+    public function configureRules()
+    {
+        foreach ($this->config->getRules() as $ruleId => $ruleConfig) {
+            $this->ruleLoader->loadRule($ruleId)->configure($ruleConfig);
+        }
     }
 
     /**
@@ -39,7 +50,7 @@ class RuleProcessor
         foreach ($this->config->getRules() as $ruleId => $ruleConfig) {
             $rule = $this->ruleLoader->loadRule($ruleId);
             if ($rule->canValidateNode($node)) {
-                $rule->validate($node, $sourceContext, $ruleConfig, $lintResult);
+                $rule->validate($node, $sourceContext, $lintResult);
             }
         }
     }
